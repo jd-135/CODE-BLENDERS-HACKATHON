@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import Link from "next/link";
 import {
   db,
   BusinessEntity,
@@ -173,6 +174,17 @@ export default function BizHackDashboard() {
               <span className="text-zinc-400">Data Engine:</span>
               <span className="text-emerald-400 font-medium">{provider}</span>
             </div>
+
+            <Link href="/srs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-zinc-800 bg-zinc-900/80 text-indigo-400 hover:bg-zinc-800 hover:text-indigo-300 text-xs flex items-center gap-1.5"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                SRS Document (PDF)
+              </Button>
+            </Link>
 
             <Button
               variant="outline"

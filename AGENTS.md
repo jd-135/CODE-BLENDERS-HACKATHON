@@ -49,8 +49,9 @@ pnpm dlx shadcn@latest add <component_name>
 - `src/lib/supabase/`: Client & server initialization with offline fallback guards.
 - `src/lib/utils.ts`: `cn` class merge helper.
 
-## 5. Offline-First Coding Discipline
+## 5. Offline-First & Git Discipline
 1. **Zero External Blocker Policy**: Never write UI code directly dependent on live cloud responses without fallback. Use `import { db } from "@/lib/db"`.
 2. **Deterministic Fallbacks**: If Wi-Fi is lost or Supabase credentials are not set, `db` automatically serves local mock/state data with zero UI code alterations.
 3. **Continuous Verification**: Keep TypeScript clean. Every feature addition must pass `pnpm tsc --noEmit` and render without hydration errors.
 4. **SRS Synchronization**: Keep `BIZ_HACK_SRS.md` updated as new API routes and features are added throughout the hackathon.
+5. **Strict Git Push Policy**: Never execute `git push` automatically in the background. Only push to GitHub / Vercel when the user explicitly instructs to do so.
