@@ -66,6 +66,14 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InteractiveTour } from "@/components/InteractiveTour";
 import {
+  downloadStudentProfilePdf,
+  downloadStudentProfilePng,
+  downloadAwardLetterPdf,
+  downloadAwardLetterPng,
+  downloadApplicationReceiptPdf,
+  downloadRejectionMemoPdf,
+} from "@/lib/integrations/dossier-generator";
+import {
   Award,
   BookOpen,
   CheckCircle2,
@@ -642,267 +650,12 @@ export default function ScholarshipPortalDashboard() {
   };
 
   const handleDownloadAwardPng = (app: Application) => {
-    try {
-      const canvas = document.createElement("canvas");
-      canvas.width = 1200;
-      canvas.height = 1600;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Ivory parchment background matching scholarshiptemplate/template.png
-      ctx.fillStyle = "#faf8f5";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Top-Left concentric ripple arcs
-      ctx.save();
-      ctx.strokeStyle = "rgba(215, 203, 185, 0.4)";
-      ctx.lineWidth = 1.8;
-      for (let r = 80; r <= 420; r += 24) {
-        ctx.beginPath();
-        ctx.arc(0, 0, r, 0, Math.PI / 2);
-        ctx.stroke();
-      }
-      // Bottom-Right concentric ripple arcs
-      for (let r = 80; r <= 450; r += 24) {
-        ctx.beginPath();
-        ctx.arc(canvas.width, canvas.height, r, Math.PI, (Math.PI * 3) / 2);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Top-Right Golden concentric circle emblem
-      const logoX = canvas.width - 430;
-      const logoY = 160;
-      ctx.save();
-      ctx.lineWidth = 2.2;
-      for (let r = 6; r <= 48; r += 6) {
-        ctx.strokeStyle = "rgba(185, 142, 85, 0.8)";
-        ctx.beginPath();
-        ctx.arc(logoX, logoY, r, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Foundation text next to logo
-      const grantor = app.scholarshipTitle.includes("Tata")
-        ? "Tata Trust"
-        : app.scholarshipTitle.includes("Reliance")
-        ? "Reliance Foundation"
-        : app.scholarshipTitle.includes("Adani")
-        ? "Adani Foundation"
-        : "Jorge Belgarca";
-
-      ctx.fillStyle = "#2d2a29";
-      ctx.font = "bold 30px 'Times New Roman', Georgia, serif";
-      ctx.fillText(grantor, logoX + 68, logoY - 6);
-      ctx.font = "24px 'Times New Roman', Georgia, serif";
-      ctx.fillText("Foundation", logoX + 68, logoY + 28);
-
-      // Top-Left Institution Name
-      ctx.font = "bold 32px 'Times New Roman', Georgia, serif";
-      ctx.fillStyle = "#1e1d1c";
-      ctx.fillText("Bannari Amman Institute of Technology", 120, 310);
-
-      // Salutation
-      const studentLastName = app.studentName.split(" ").slice(-1)[0] || app.studentName;
-      ctx.font = "23px 'Times New Roman', Georgia, serif";
-      ctx.fillStyle = "#2d2a29";
-      ctx.fillText(`Dear Mr./Ms. ${studentLastName},`, 120, 410);
-
-      // 4 Body Paragraphs matching template.png
-      const p1 = `I am pleased to inform you that you have been selected as the recipient of the ${app.scholarshipTitle} for the next academic year. On behalf of Bannari Amman Institute of Technology and the ${grantor} Foundation, I extend our congratulations to you.`;
-      const p2 = `The ${app.scholarshipTitle} is a prestigious award that honors the legacy of ${grantor} and extraordinary contributions to academic excellence and leadership. This scholarship is a testament to your outstanding achievements, dedication, and potential.`;
-      const p3 = `Once again, we congratulate you on your exceptional achievement and are excited to see the positive impact you will make in your academic journey and beyond.`;
-      const p4 = `If you have any further questions or wish to discuss it further, please do not hesitate to get in touch using my contact details provided.`;
-
-      const wrapText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number) => {
-        const words = text.split(" ");
-        let line = "";
-        let currentY = y;
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + " ";
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > maxWidth && n > 0) {
-            ctx.fillText(line, x, currentY);
-            line = words[n] + " ";
-            currentY += lineHeight;
-          } else {
-            line = testLine;
-          }
-        }
-        ctx.fillText(line, x, currentY);
-        return currentY + lineHeight;
-      };
-
-      ctx.font = "21px 'Times New Roman', Georgia, serif";
-      ctx.fillStyle = "#33312e";
-      let curY = wrapText(p1, 120, 480, 960, 36) + 24;
-      curY = wrapText(p2, 120, curY, 960, 36) + 24;
-      curY = wrapText(p3, 120, curY, 960, 36) + 24;
-      curY = wrapText(p4, 120, curY, 960, 36) + 36;
-
-      // Closing
-      ctx.font = "22px 'Times New Roman', Georgia, serif";
-      ctx.fillText("Yours sincerely,", 120, curY);
-
-      // Cursive signature "Jay Dinakar R"
-      curY += 65;
-      ctx.font = "italic 44px 'Brush Script MT', 'Dancing Script', 'Snell Roundhand', cursive, Georgia, serif";
-      ctx.fillStyle = "#2c2825";
-      ctx.fillText("Jay Dinakar R", 120, curY);
-
-      // Signer title
-      curY += 40;
-      ctx.font = "bold 20px 'Times New Roman', Georgia, serif";
-      ctx.fillText("Jay Dinakar R", 120, curY);
-      curY += 26;
-      ctx.font = "italic 19px 'Times New Roman', Georgia, serif";
-      ctx.fillStyle = "#66625c";
-      ctx.fillText("Academic Trust Dean & Director of Scholarships", 120, curY);
-      curY += 24;
-      ctx.fillText("Bannari Amman Institute of Technology", 120, curY);
-
-      // Watermark reference stamp at the bottom
-      ctx.font = "14px monospace";
-      ctx.fillStyle = "#a19a90";
-      ctx.fillText(`Official Verification Hash: DBT-2026-${app.id.toUpperCase()} • Validated on National Public Ledger`, 120, 1500);
-
-      // Trigger instant PNG download
-      const link = document.createElement("a");
-      link.download = `Scholarship_Award_Letter_${app.studentName.replace(/\\s+/g, "_")}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch (e) {
-      console.error("Error generating award letter PNG:", e);
-      window.print();
-    }
+    downloadAwardLetterPng(app);
   };
 
-  // Direct High-Resolution PDF Generator via jsPDF
+  // Direct High-Resolution PDF Generator
   const handleDownloadAwardPdf = (app: Application) => {
-    try {
-      const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-
-      // Outer Decorative Border
-      doc.setDrawColor(0, 74, 198);
-      doc.setLineWidth(2);
-      doc.rect(20, 20, pageWidth - 40, pageHeight - 40);
-
-      // Inner Gold Accent Border
-      doc.setDrawColor(181, 140, 84);
-      doc.setLineWidth(1);
-      doc.rect(26, 26, pageWidth - 52, pageHeight - 52);
-
-      // Institution Header
-      doc.setFont("times", "bold");
-      doc.setFontSize(20);
-      doc.setTextColor(30, 29, 28);
-      doc.text("Bannari Amman Institute of Technology", 45, 65);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(100, 100, 100);
-      doc.text("OFFICE OF THE DEAN • ACADEMIC SCHOLARSHIPS DIVISION • SATHYAMANGALAM", 45, 80);
-
-      const grantor = app.scholarshipTitle.includes("Tata")
-        ? "Tata Trust"
-        : app.scholarshipTitle.includes("Reliance")
-        ? "Reliance Foundation"
-        : app.scholarshipTitle.includes("Adani")
-        ? "Adani Foundation"
-        : "Bannari Amman Trust";
-
-      doc.setFont("times", "bold");
-      doc.setFontSize(13);
-      doc.setTextColor(45, 42, 41);
-      doc.text(grantor, pageWidth - 45, 65, { align: "right" });
-      doc.setFont("times", "italic");
-      doc.setFontSize(9);
-      doc.text("Endowment Foundation", pageWidth - 45, 78, { align: "right" });
-
-      doc.setDrawColor(220, 220, 220);
-      doc.setLineWidth(0.8);
-      doc.line(45, 95, pageWidth - 45, 95);
-
-      // Reference and Date
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(80, 80, 80);
-      const todayStr = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-      doc.text(`Reference: DBT-2026-${app.id.toUpperCase()}`, 45, 115);
-      doc.text(`Date of Issue: ${todayStr}`, pageWidth - 45, 115, { align: "right" });
-
-      // Salutation
-      const studentLastName = app.studentName.split(" ").slice(-1)[0] || app.studentName;
-      doc.setFont("times", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(30, 29, 28);
-      doc.text(`Dear Mr./Ms. ${studentLastName},`, 45, 145);
-
-      // Paragraphs
-      doc.setFont("times", "normal");
-      doc.setFontSize(10.5);
-      doc.setTextColor(40, 40, 40);
-
-      const p1 = `I am pleased to inform you that you have been selected as the distinguished recipient of the ${app.scholarshipTitle} for the next academic year. On behalf of Bannari Amman Institute of Technology and the ${grantor} Foundation, I extend our congratulations to you.`;
-      const p2 = `The ${app.scholarshipTitle} is a prestigious honor that recognizes extraordinary contributions to academic excellence, leadership, and community service. This scholarship is a testament to your outstanding achievements (CGPA: ${app.studentGpa.toFixed(2)}), dedication, and proven potential.`;
-      const p3 = `This scholarship includes an academic award sanctioned under the Direct Benefit Transfer (DBT) scheme, which will be credited directly to your registered NPCI-seeded bank account upon completion of institutional verification.`;
-      const p4 = `Once again, we congratulate you on your exceptional achievement and are excited to see the positive impact you will make in your academic journey and beyond. If you have any further questions, please do not hesitate to contact the Academic Trust Office.`;
-
-      let curY = 170;
-      const margin = 45;
-      const maxWidth = pageWidth - margin * 2;
-
-      [p1, p2, p3, p4].forEach((p) => {
-        const lines = doc.splitTextToSize(p, maxWidth);
-        doc.text(lines, margin, curY);
-        curY += lines.length * 15 + 12;
-      });
-
-      // Sign-off
-      curY += 10;
-      doc.setFont("times", "normal");
-      doc.setFontSize(11);
-      doc.text("Yours sincerely,", margin, curY);
-
-      curY += 35;
-      doc.setFont("times", "italic");
-      doc.setFontSize(22);
-      doc.setTextColor(20, 25, 45);
-      doc.text("Jay Dinakar R", margin, curY);
-
-      curY += 20;
-      doc.setFont("times", "bold");
-      doc.setFontSize(11);
-      doc.setTextColor(30, 29, 28);
-      doc.text("Jay Dinakar R", margin, curY);
-
-      curY += 14;
-      doc.setFont("times", "italic");
-      doc.setFontSize(9.5);
-      doc.setTextColor(90, 85, 80);
-      doc.text("Director of Scholarships & Academic Trust Dean", margin, curY);
-
-      curY += 12;
-      doc.text("Bannari Amman Institute of Technology", margin, curY);
-
-      // Security footer
-      doc.setDrawColor(220, 220, 220);
-      doc.setLineWidth(0.6);
-      doc.line(margin, pageHeight - 50, pageWidth - margin, pageHeight - 50);
-
-      doc.setFont("courier", "normal");
-      doc.setFontSize(8);
-      doc.setTextColor(130, 130, 130);
-      doc.text(`Official Cryptographic Verification Hash: DBT-2026-${app.id.toUpperCase()} • Validated on National Public Ledger`, margin, pageHeight - 36);
-
-      doc.save(`Scholarship_Award_Letter_${app.studentName.replace(/\\s+/g, "_")}.pdf`);
-    } catch (err) {
-      console.error("PDF generation failed, falling back to print:", err);
-      window.print();
-    }
+    downloadAwardLetterPdf(app);
   };
 
   // Real Multi-File ZIP Audit Pack Generator using JSZip
@@ -4172,7 +3925,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                           <div className="w-full pt-2 flex flex-col gap-2">
                             <Button
                               type="button"
-                              onClick={() => window.print()}
+                              onClick={() => downloadApplicationReceiptPdf(submittedAppReceipt, student)}
                               className="w-full h-11 rounded-xl bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md"
                             >
                               <FileText className="h-4 w-4" /> Download Acknowledgment (PDF)
@@ -4813,14 +4566,11 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => {
-                                      setSelectedAwardApp(app);
-                                      setTimeout(() => window.print(), 300);
-                                    }}
-                                    className="border-[#eaedff] bg-white text-[#131b2e] hover:bg-[#f2f3ff] text-xs font-semibold rounded-xl h-8 px-3 gap-1.5"
+                                    onClick={() => handleDownloadAwardPdf(app)}
+                                    className="border-[#eaedff] bg-white text-[#004ac6] hover:bg-[#f2f3ff] text-xs font-semibold rounded-xl h-8 px-3 gap-1.5"
                                   >
-                                    <FileText className="h-3.5 w-3.5 text-[#737686]" />
-                                    <span>Print / PDF</span>
+                                    <Download className="h-3.5 w-3.5 text-[#004ac6]" />
+                                    <span>Download Letter (PDF)</span>
                                   </Button>
                                 </div>
                               ) : isAppRejected ? (
@@ -4835,7 +4585,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => window.print()}
+                                    onClick={() => downloadRejectionMemoPdf(app)}
                                     className="border-[#eaedff] bg-white text-[#ba1a1a] hover:bg-[#ffdad6]/30 text-xs font-semibold rounded-xl h-8 px-3 gap-1.5"
                                   >
                                     <FileDown className="h-3.5 w-3.5" />
@@ -5894,12 +5644,27 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                             <button
                               type="button"
                               onClick={() => {
-                                alert("Downloading Official Disqualification Order PDF (Rejection_Notice_PS78-2026-000123.pdf)...");
+                                const dummyApp: Application = {
+                                  id: "app-tn-8821",
+                                  scholarshipId: "sch-101",
+                                  scholarshipTitle: "Central Merit Grant AY 2025-26",
+                                  studentId: student.id,
+                                  studentName: student.fullName,
+                                  studentEmail: student.email,
+                                  studentDepartment: student.department,
+                                  studentGpa: student.gpa,
+                                  annualIncome: student.annualIncome,
+                                  essay: "Review for merit quota",
+                                  status: "REJECTED",
+                                  createdAt: "2026-09-10",
+                                  updatedAt: "2026-09-20",
+                                };
+                                downloadRejectionMemoPdf(dummyApp);
                               }}
                               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#f2f3ff] text-[#131b2e] hover:bg-[#e2e7ff] text-xs font-semibold transition-colors"
                             >
-                              <Eye className="h-4 w-4" />
-                              <span>View Rejection Order (PDF)</span>
+                              <FileDown className="h-4 w-4 text-[#ba1a1a]" />
+                              <span>Download Rejection Order (PDF)</span>
                             </button>
                           </div>
                           <span className="text-[10px] text-[#737686] font-mono">Ref ID: REJ-TN-8821</span>
@@ -6220,19 +5985,24 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                       </span>
                     </div>
 
-                    <Button
-                      onClick={() => {
-                        setAppDepartment(student.department);
-                        setAppGpa(String(student.gpa));
-                        setAppIncome(String(student.annualIncome));
-                        setAdminActionNotice(`Verified profile records for ${student.fullName} synced with DigiLocker & NAD.`);
-                        setTimeout(() => setAdminActionNotice(null), 4000);
-                      }}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white text-[#004ac6] hover:bg-slate-50 font-bold text-xs shadow-md"
-                    >
-                      <UserCheck className="h-4 w-4" />
-                      <span>Verified Profile Records</span>
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        onClick={() => downloadStudentProfilePdf(student, bonafideStatus)}
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-white text-[#004ac6] hover:bg-slate-50 font-bold text-xs shadow-md"
+                        title="Download Official Student Profile Dossier PDF"
+                      >
+                        <FileDown className="h-4 w-4" />
+                        <span>Export Profile (PDF)</span>
+                      </Button>
+                      <Button
+                        onClick={() => downloadStudentProfilePng(student, bonafideStatus)}
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold text-xs border border-white/30 shadow-md backdrop-blur-md"
+                        title="Download Student Profile Dossier PNG Image"
+                      >
+                        <Download className="h-4 w-4" />
+                        <span>Export Image (PNG)</span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -6876,21 +6646,31 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                             <FileText className="h-6 w-6 text-[#005e6e]" />
                             <div className="flex flex-col">
                               <span className="text-xs text-[#131b2e] font-semibold">
-                                Comprehensive Student Dossier
+                                Comprehensive Student Verification Dossier
                               </span>
                               <span className="text-xs text-[#737686]">
-                                Encrypted, tamper-evident PDF with official PS78 verification QR
+                                Official institutional template for {student.fullName} • Real PDF &amp; PNG downloads
                               </span>
                             </div>
                           </div>
-                          <Button
-                            type="button"
-                            onClick={() => window.print()}
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#005e6e] hover:bg-[#004e5c] text-white text-xs font-semibold shadow-sm"
-                          >
-                            <FileDown className="h-4 w-4" />
-                            <span>Download PDF Dossier</span>
-                          </Button>
+                          <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <Button
+                              type="button"
+                              onClick={() => downloadStudentProfilePdf(student, bonafideStatus)}
+                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#005e6e] hover:bg-[#004e5c] text-white text-xs font-semibold shadow-sm"
+                            >
+                              <FileDown className="h-4 w-4" />
+                              <span>Download PDF Dossier</span>
+                            </Button>
+                            <Button
+                              type="button"
+                              onClick={() => downloadStudentProfilePng(student, bonafideStatus)}
+                              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-semibold shadow-sm"
+                            >
+                              <Download className="h-4 w-4" />
+                              <span>Download Image (PNG)</span>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -8724,7 +8504,20 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               : "Jorge Belgarca";
 
             return (
-              <div className="bg-[#faf8f5] rounded-2xl border border-[#eae4da] shadow-2xl relative overflow-hidden font-serif p-8 sm:p-12 text-[#2d2a29]">
+              <div
+                onClick={() => downloadAwardLetterPdf(selectedAwardApp)}
+                className="bg-[#faf8f5] rounded-2xl border border-[#eae4da] shadow-2xl relative overflow-hidden font-serif p-8 sm:p-12 text-[#2d2a29] cursor-pointer group transition-all"
+                title="Click anywhere to download your official Award Letter PDF"
+              >
+                {/* Download Hint Pill */}
+                <div className="mb-4 px-3 py-1.5 rounded-lg bg-blue-50/90 border border-blue-200/90 flex items-center justify-between font-sans text-xs text-[#004ac6] relative z-10 print:hidden">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    <Award className="h-4 w-4 text-[#004ac6]" /> Official Award Letter Preview
+                  </span>
+                  <span className="text-[11px] font-bold underline flex items-center gap-1">
+                    <Download className="h-3 w-3" /> Click letter to download PDF
+                  </span>
+                </div>
                 {/* Top-Left Concentric Ripple Arc Watermark (from template.png) */}
                 <svg
                   className="absolute -top-10 -left-10 w-56 h-56 pointer-events-none opacity-35 text-[#cbbba6]"
@@ -8855,7 +8648,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                     </a>
                     <Button
                       type="button"
-                      onClick={() => handleDownloadAwardPdf(selectedAwardApp)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadAwardPdf(selectedAwardApp);
+                      }}
                       className="bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-semibold rounded-xl h-8 px-3.5 gap-1.5 shadow-sm"
                     >
                       <Download className="h-3.5 w-3.5" />
@@ -8863,7 +8659,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => handleDownloadAwardPng(selectedAwardApp)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadAwardPng(selectedAwardApp);
+                      }}
                       className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-semibold rounded-xl h-8 px-3.5 gap-1.5 shadow-sm"
                     >
                       <FileDown className="h-3.5 w-3.5" />
@@ -8871,11 +8670,14 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => window.print()}
-                      className="bg-[#1e1d1c] hover:bg-[#000000] text-white text-xs font-semibold rounded-xl h-8 px-3.5 gap-1.5 shadow-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadAwardPdf(selectedAwardApp);
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl h-8 px-3.5 gap-1.5 shadow-sm"
                     >
-                      <FileText className="h-3.5 w-3.5" />
-                      <span>Print</span>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <span>Instant Export</span>
                     </Button>
                   </div>
                 </div>
@@ -9116,25 +8918,33 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   Close
                 </Button>
                 {previewDoc.fileUrl ? (
-                  <a
-                    href={previewDoc.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-semibold rounded-lg shadow-sm px-4 py-2"
-                  >
-                    <ExternalLink className="h-4 w-4" />{" "}
-                    {previewDoc.fileUrl.startsWith("/specimens") ? "Open Full Document Proof" : "View Online on Cloudinary"}
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={previewDoc.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 bg-[#f2f3ff] hover:bg-[#e2e7ff] text-[#004ac6] border border-[#eaedff] text-xs font-semibold rounded-lg px-3 py-2"
+                    >
+                      <ExternalLink className="h-4 w-4" /> Open Full Proof
+                    </a>
+                    <a
+                      href={previewDoc.fileUrl}
+                      download={previewDoc.fileName}
+                      className="inline-flex items-center justify-center gap-1.5 bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-semibold rounded-lg shadow-sm px-4 py-2"
+                    >
+                      <Download className="h-4 w-4" /> Download Official File
+                    </a>
+                  </div>
                 ) : (
                   <Button
                     type="button"
                     onClick={() => {
-                      alert(`Downloaded official authenticated copy of "${previewDoc.fileName}".`);
+                      downloadStudentProfilePdf(student, bonafideStatus);
                       setPreviewDoc(null);
                     }}
                     className="bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-semibold rounded-lg shadow-sm gap-1.5"
                   >
-                    <FileText className="h-4 w-4" /> Download Official PDF
+                    <Download className="h-4 w-4" /> Download Authenticated PDF Copy
                   </Button>
                 )}
               </DialogFooter>
