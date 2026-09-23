@@ -20,11 +20,15 @@ export interface TourStep {
   preferredPlacement?: "bottom" | "top" | "left" | "right";
 }
 
-export const DEFAULT_TOUR_STEPS: TourStep[] = [
+// =========================================================================
+// 1. STUDENT ONBOARDING & NAVIGATION TOUR
+// Tailored for Student Applicants exploring grants, documents, and DBT awards
+// =========================================================================
+export const STUDENT_TOUR_STEPS: TourStep[] = [
   {
     targetId: "tour-top-header",
-    tag: "PORTAL HEADER",
-    title: "Your Workspace Header & Identity",
+    tag: "STUDENT WORKSPACE",
+    title: "Your Portal Header & Identity",
     desc: "This header shows your active student profile, real-time DigiLocker sync status, and instant search across all national scholarships.",
     highlights: [
       "DigiLocker & UIDAI e-KYC sync status verified.",
@@ -35,8 +39,8 @@ export const DEFAULT_TOUR_STEPS: TourStep[] = [
   },
   {
     targetId: "tour-sidebar-nav",
-    tag: "PORTAL NAVIGATION",
-    title: "Move Between Navigation Tabs",
+    tag: "STUDENT NAVIGATION",
+    title: "Move Between Student Tools",
     desc: "Use this navigation to seamlessly explore scholarship schemes, manage encrypted documents, track application dossiers, and view the public blockchain ledger.",
     highlights: [
       "Dashboard: Academic standing overview & dynamic AI match scores.",
@@ -100,9 +104,96 @@ export const DEFAULT_TOUR_STEPS: TourStep[] = [
   },
 ];
 
+// =========================================================================
+// 2. ADMINISTRATOR & COMMITTEE CHAIR TOUR
+// Tailored for Operations, Scheme Governance, Quota Rules & Audit Ledger
+// =========================================================================
+export const ADMIN_TOUR_STEPS: TourStep[] = [
+  {
+    targetId: "tour-top-header",
+    tag: "ADMIN CONTROL CENTER",
+    title: "Administrator Header & Unified Search",
+    desc: "This executive header provides instant search across candidate dossiers, scholarship schemes, and real-time database synchronization.",
+    highlights: [
+      "Multi-Entity Search: Look up applicants, scheme IDs, roll numbers, or disbursement UTRs.",
+      "Sync Engine: Re-computes quota capacity, budget utilization, and pending committee queues.",
+      "Committee Chairperson Identity: Operating under authorized institutional credentials.",
+    ],
+    preferredPlacement: "bottom",
+  },
+  {
+    targetId: "tour-admin-sidebar-nav",
+    tag: "ADMIN NAVIGATION",
+    title: "Administrative Operations Menu",
+    desc: "Manage all operations through dedicated modules: Executive Overview, Evaluation & Verification Center, Scheme Rule Engine, and Public Blockchain Ledger.",
+    highlights: [
+      "Admin Overview: Macro metrics on total sanctions, fund disbursals, and scheme capacity.",
+      "Applications Review: Multi-criteria evaluation, merit scoring, and approval workflows.",
+      "Manage Schemes: Configure quota rules, CGPA thresholds, and departmental eligibility.",
+      "Audit Ledger & DBT: Immutable cryptographic verification and statutory compliance packs.",
+    ],
+    preferredPlacement: "right",
+  },
+  {
+    targetId: "tour-admin-overview-stats",
+    tabKey: "admin-overview",
+    tag: "EXECUTIVE ANALYTICS",
+    title: "Operations Overview & Fund Disbursals",
+    desc: "Live analytics displaying total scholarship capital sanctioned, seat utilization rates, and active submission velocity across all university departments.",
+    highlights: [
+      "Live KPI Counters: Real-time tracking of sanctioned funds (₹) and remaining capacity.",
+      "1-Click Seed Simulator: Test new corporate or endowment fellowship scenarios safely.",
+      "Direct Scheme Creation: Launch central government or private trust schemes instantly.",
+    ],
+    preferredPlacement: "bottom",
+  },
+  {
+    targetId: "tour-admin-app-review",
+    tabKey: "applications-review",
+    tag: "EVALUATION CENTER",
+    title: "Evaluation & Verification Workspace",
+    desc: "Review candidate dossiers, inspect DigiLocker credential forensics, assign merit scores, and issue formal sanctions or categorized statutory rejections.",
+    highlights: [
+      "Multi-Filter Pipeline: Filter by Status (Pending, Under Review, Approved, Rejected).",
+      "Statutory Rejection Engine: Assign formal rejection reasons with mandatory 14-day appeal notices.",
+      "Automated Sanctions: Triggers direct NPCI mapper electronic DBT fund transfers.",
+    ],
+    preferredPlacement: "bottom",
+  },
+  {
+    targetId: "tour-admin-manage-schemes",
+    tabKey: "manage-schemes",
+    tag: "SCHEME GOVERNANCE",
+    title: "Scheme Rules & Strict CGPA Configuration",
+    desc: "Create and calibrate scholarship schemes. Enforce strict minimum CGPA cutoffs, annual family income ceilings, and departmental seat quotas.",
+    highlights: [
+      "Strict CGPA Guardrail: Define threshold (e.g. 3.75 CGPA) that strictly gates student eligibility.",
+      "Income Ceiling & Quotas: Automatically validate candidate financial need via tahsildar records.",
+      "Lifecycle Controls: Toggle schemes between OPEN, CLOSED, and ARCHIVED states.",
+    ],
+    preferredPlacement: "bottom",
+  },
+  {
+    targetId: "tour-admin-audit-ledger",
+    tabKey: "analytics",
+    tag: "BLOCKCHAIN & COMPLIANCE",
+    title: "Cryptographic Ledger & 1-Click ZIP Audit Pack",
+    desc: "Verify immutable transaction hashes anchored to the SHA-256 Merkle chain. Validate zero-leakage Direct Benefit Transfers and export statutory compliance bundles.",
+    highlights: [
+      "Immutable Audit Ledger: Every sanction and disbursement is cryptographically chained.",
+      "Anti-Fraud Checksums: Verhoeff Dihedral D5 and AES-256 tokenization validation.",
+      "1-Click ZIP Audit Pack: Exports complete CSV data, JSON ledger, and statutory report bundle.",
+    ],
+    preferredPlacement: "bottom",
+  },
+];
+
+export const DEFAULT_TOUR_STEPS = STUDENT_TOUR_STEPS;
+
 interface InteractiveTourProps {
   isOpen: boolean;
   onClose: () => void;
+  role?: "STUDENT" | "ADMIN";
   steps?: TourStep[];
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -124,10 +215,12 @@ interface CardPos {
 export function InteractiveTour({
   isOpen,
   onClose,
-  steps = DEFAULT_TOUR_STEPS,
+  role = "STUDENT",
+  steps,
   activeTab,
   onTabChange,
 }: InteractiveTourProps) {
+  const activeSteps = steps || (role === "ADMIN" ? ADMIN_TOUR_STEPS : STUDENT_TOUR_STEPS);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
   const [cardPos, setCardPos] = useState<CardPos>({
@@ -137,7 +230,7 @@ export function InteractiveTour({
   });
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const currentStep = steps[currentStepIndex] || steps[0];
+  const currentStep = activeSteps[currentStepIndex] || activeSteps[0];
 
   const updatePosition = useCallback(() => {
     if (!isOpen || !currentStep) return;
@@ -296,7 +389,7 @@ export function InteractiveTour({
       if (e.key === "Escape") {
         onClose();
       } else if (e.key === "ArrowRight") {
-        if (currentStepIndex < steps.length - 1) {
+        if (currentStepIndex < activeSteps.length - 1) {
           setCurrentStepIndex((prev) => prev + 1);
         } else {
           onClose();
@@ -310,18 +403,18 @@ export function InteractiveTour({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, currentStepIndex, steps.length, onClose]);
+  }, [isOpen, currentStepIndex, activeSteps.length, onClose]);
 
-  // Reset step index when opened
+  // Reset step index when opened or role switches
   useEffect(() => {
     if (isOpen) {
       setCurrentStepIndex(0);
     }
-  }, [isOpen]);
+  }, [isOpen, role]);
 
   if (!isOpen) return null;
 
-  const totalSteps = steps.length;
+  const totalSteps = activeSteps.length;
 
   const handleNext = () => {
     if (currentStepIndex < totalSteps - 1) {
@@ -343,7 +436,7 @@ export function InteractiveTour({
       <div
         className="fixed inset-0 bg-transparent"
         onClick={() => {
-          // Clicking the dimmed background can either advance or close
+          // Backdrop click
         }}
       />
 
@@ -358,7 +451,9 @@ export function InteractiveTour({
             height: spotlight.height,
             border: "2px solid rgba(255, 255, 255, 0.95)",
             boxShadow:
-              "0 0 0 9999px rgba(15, 23, 42, 0.65), 0 0 30px rgba(147, 51, 234, 0.6), inset 0 0 15px rgba(147, 51, 234, 0.15)",
+              role === "ADMIN"
+                ? "0 0 0 9999px rgba(15, 23, 42, 0.70), 0 0 30px rgba(113, 42, 226, 0.65), inset 0 0 15px rgba(113, 42, 226, 0.15)"
+                : "0 0 0 9999px rgba(15, 23, 42, 0.65), 0 0 30px rgba(147, 51, 234, 0.6), inset 0 0 15px rgba(147, 51, 234, 0.15)",
           }}
         />
       )}
@@ -392,14 +487,26 @@ export function InteractiveTour({
         )}
 
         {/* Top Gradient Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-purple-500 via-indigo-600 to-violet-600" />
+        <div
+          className={`h-1.5 w-full ${
+            role === "ADMIN"
+              ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-800"
+              : "bg-gradient-to-r from-purple-500 via-indigo-600 to-violet-600"
+          }`}
+        />
 
         {/* Card Content */}
         <div className="p-6">
           {/* Header Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center font-bold text-xs shadow-sm">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${
+                  role === "ADMIN"
+                    ? "bg-purple-100 text-purple-700 border border-purple-300"
+                    : "bg-purple-50 text-purple-600 border border-purple-200"
+                }`}
+              >
                 <HelpCircle className="w-4 h-4" />
               </div>
               <div>
@@ -407,7 +514,7 @@ export function InteractiveTour({
                   {currentStep.tag}
                 </div>
                 <div className="text-xs text-slate-400 font-medium">
-                  Step {currentStepIndex + 1} of {totalSteps}
+                  {role === "ADMIN" ? "Admin Tour" : "Student Tour"} • Step {currentStepIndex + 1} of {totalSteps}
                 </div>
               </div>
             </div>
@@ -448,7 +555,7 @@ export function InteractiveTour({
             {/* Step Dots & Esc hint */}
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5">
-                {steps.map((_, i) => (
+                {activeSteps.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentStepIndex(i)}

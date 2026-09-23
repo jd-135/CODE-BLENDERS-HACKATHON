@@ -1544,7 +1544,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               <div className="px-3 py-1 text-[11px] uppercase font-bold tracking-wider text-[#737686]">
                 Administration
               </div>
-              <nav className="flex flex-col gap-1">
+              <nav id="tour-admin-sidebar-nav" className="flex flex-col gap-1">
                 <button
                   onClick={() => setActiveTab("admin-overview")}
                   className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold transition-all ${
@@ -1604,6 +1604,20 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                     <Database className="h-4 w-4" />
                     <span>Audit Ledger & DBT</span>
                   </div>
+                </button>
+
+                <button
+                  onClick={() => setIsHelpOpen(true)}
+                  className="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold text-purple-700 bg-purple-50/90 hover:bg-purple-100 transition-all border border-purple-200/70 shadow-sm"
+                  title="Admin Operations Guide (?)"
+                >
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-4 w-4 text-purple-600" />
+                    <span>Admin Guide (?)</span>
+                  </div>
+                  <Badge className="bg-purple-600 text-white text-[9px] px-1.5 py-0 font-bold shadow-sm">
+                    Tour
+                  </Badge>
                 </button>
               </nav>
             </div>
@@ -1685,10 +1699,12 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               size="sm"
               onClick={() => setIsHelpOpen(true)}
               className="h-8 px-2.5 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs gap-1.5 rounded-lg shadow-sm font-bold transition-all"
-              title="Interactive Platform Guide (?)"
+              title={activeRole === "ADMIN" ? "Admin Operations Guide (?)" : "Interactive Platform Guide (?)"}
             >
               <HelpCircle className="h-3.5 w-3.5 text-purple-600" />
-              <span className="hidden sm:inline">Platform Guide</span>
+              <span className="hidden sm:inline">
+                {activeRole === "ADMIN" ? "Admin Guide" : "Platform Guide"}
+              </span>
               <span className="sm:hidden font-bold">?</span>
             </Button>
 
@@ -6784,6 +6800,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "admin-overview" && (
             <motion.div
+              id="tour-admin-overview-stats"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -7002,6 +7019,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "manage-schemes" && (
             <motion.div
+              id="tour-admin-manage-schemes"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -7134,6 +7152,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "analytics" && (
             <motion.div
+              id="tour-admin-audit-ledger"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -7805,6 +7824,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "applications-review" && (
             <motion.div
+              id="tour-admin-app-review"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -9438,6 +9458,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
       <InteractiveTour
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
+        role={activeRole}
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab)}
       />
@@ -9447,11 +9468,11 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
         type="button"
         onClick={() => setIsHelpOpen(true)}
         className="fixed bottom-6 right-6 z-40 p-3.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white shadow-xl hover:shadow-2xl transition-all flex items-center gap-2 group hover:scale-105 active:scale-95 border-2 border-white/80"
-        title="Interactive Platform Guide (?)"
+        title={activeRole === "ADMIN" ? "Interactive Admin Guide (?)" : "Interactive Platform Guide (?)"}
       >
         <HelpCircle className="w-5 h-5" />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-semibold whitespace-nowrap">
-          Platform Guide (?)
+          {activeRole === "ADMIN" ? "Admin Guide (?)" : "Platform Guide (?)"}
         </span>
       </button>
     </div>
