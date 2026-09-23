@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100" width="800" height="1100" style="background:#fff;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <rect width="800" height="1100" fill="#fcfcfd"/>
+  <!-- Border -->
+  <rect x="24" y="24" width="752" height="1052" fill="#ffffff" stroke="#004ac6" stroke-width="3" rx="12"/>
+  <rect x="34" y="34" width="732" height="1032" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-dasharray="8 4" rx="8"/>
+
+  <!-- Watermark -->
+  <text x="400" y="580" fill="rgba(0,74,198,0.04)" font-size="90" font-weight="900" font-family="serif" text-anchor="middle" transform="rotate(-30 400 580)">IIT DELHI OFFICIAL</text>
+
+  <!-- Header -->
+  <circle cx="100" cy="110" r="45" fill="#004ac6" opacity="0.08"/>
+  <!-- Institution Logo Emblem -->
+  <g transform="translate(68, 78) scale(1.1)">
+    <circle cx="28" cy="28" r="26" fill="none" stroke="#004ac6" stroke-width="3"/>
+    <circle cx="28" cy="28" r="21" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+    <path d="M28 8 L33 22 L48 22 L36 31 L40 46 L28 37 L16 46 L20 31 L8 22 L23 22 Z" fill="#d4af37" opacity="0.8"/>
+  </g>
+
+  <text x="160" y="95" fill="#004ac6" font-size="24" font-weight="800" font-family="serif" letter-spacing="1">INDIAN INSTITUTE OF TECHNOLOGY DELHI</text>
+  <text x="160" y="118" fill="#555" font-size="12" font-weight="600" letter-spacing="0.5">HAUZ KHAS, NEW DELHI - 110016 • EXAMINATION &amp; RECORDS DIVISION</text>
+  <text x="160" y="136" fill="#00788c" font-size="11" font-weight="bold">CONSOLIDATED ACADEMIC GRADE TRANSCRIPT &amp; RECORD OF PERFORMANCE</text>
+
+  <line x1="50" y1="160" x2="750" y2="160" stroke="#004ac6" stroke-width="2"/>
+
+  <!-- Candidate Details Grid -->
+  <rect x="50" y="175" width="700" height="110" fill="#f4f7ff" rx="8" stroke="#dbe4ff" stroke-width="1"/>
+  <text x="70" y="202" fill="#666" font-size="11" font-weight="bold">STUDENT NAME:</text>
+  <text x="180" y="202" fill="#111" font-size="13" font-weight="bold">PRIYA SHARMA</text>
+  <text x="440" y="202" fill="#666" font-size="11" font-weight="bold">ENROLLMENT / ROLL NO:</text>
+  <text x="610" y="202" fill="#004ac6" font-size="13" font-weight="bold" font-family="monospace">2024CSB1089</text>
+
+  <text x="70" y="232" fill="#666" font-size="11" font-weight="bold">PROGRAMME:</text>
+  <text x="180" y="232" fill="#111" font-size="12" font-weight="600">B.Tech (Computer Science &amp; Engg)</text>
+  <text x="440" y="232" fill="#666" font-size="11" font-weight="bold">ACADEMIC YEAR:</text>
+  <text x="610" y="232" fill="#111" font-size="12" font-weight="600">2024 - 2026</text>
+
+  <text x="70" y="262" fill="#666" font-size="11" font-weight="bold">NATIONAL ID (AADHAAR):</text>
+  <text x="240" y="262" fill="#111" font-size="12" font-family="monospace">XXXX-XXXX-4819</text>
+  <text x="440" y="262" fill="#666" font-size="11" font-weight="bold">CBSE 12th ROLL:</text>
+  <text x="610" y="262" fill="#111" font-size="12" font-family="monospace">14692811 (96.4%)</text>
+
+  <!-- Table Header -->
+  <rect x="50" y="305" width="700" height="34" fill="#004ac6" rx="4"/>
+  <text x="70" y="327" fill="#fff" font-size="11" font-weight="bold">COURSE CODE</text>
+  <text x="190" y="327" fill="#fff" font-size="11" font-weight="bold">COURSE TITLE</text>
+  <text x="490" y="327" fill="#fff" font-size="11" font-weight="bold">CREDITS</text>
+  <text x="580" y="327" fill="#fff" font-size="11" font-weight="bold">GRADE</text>
+  <text x="660" y="327" fill="#fff" font-size="11" font-weight="bold">POINTS</text>
+
+  <!-- Table Rows -->
+  <g font-size="12" fill="#222">
+    <rect x="50" y="345" width="700" height="30" fill="#fff"/>
+    <text x="70" y="365" font-family="monospace" font-weight="bold">COL106</text>
+    <text x="190" y="365">Data Structures &amp; Algorithms</text>
+    <text x="510" y="365">4.0</text>
+    <text x="590" y="365" font-weight="bold" fill="#00788c">A (Outstanding)</text>
+    <text x="680" y="365">10.0</text>
+
+    <rect x="50" y="378" width="700" height="30" fill="#f9faff"/>
+    <text x="70" y="398" font-family="monospace" font-weight="bold">ELL205</text>
+    <text x="190" y="398">Signals and Systems</text>
+    <text x="510" y="398">4.0</text>
+    <text x="590" y="398" font-weight="bold" fill="#00788c">A (Outstanding)</text>
+    <text x="680" y="398">10.0</text>
+
+    <rect x="50" y="411" width="700" height="30" fill="#fff"/>
+    <text x="70" y="431" font-family="monospace" font-weight="bold">MTL106</text>
+    <text x="190" y="431">Probability &amp; Stochastic Processes</text>
+    <text x="510" y="431">4.0</text>
+    <text x="590" y="431" font-weight="bold" fill="#004ac6">A- (Excellent)</text>
+    <text x="680" y="431">9.0</text>
+
+    <rect x="50" y="444" width="700" height="30" fill="#f9faff"/>
+    <text x="70" y="464" font-family="monospace" font-weight="bold">COP290</text>
+    <text x="190" y="464">Design Practices in Computer Science</text>
+    <text x="510" y="464">3.0</text>
+    <text x="590" y="464" font-weight="bold" fill="#00788c">A (Outstanding)</text>
+    <text x="680" y="464">10.0</text>
+
+    <rect x="50" y="477" width="700" height="30" fill="#fff"/>
+    <text x="70" y="497" font-family="monospace" font-weight="bold">COL215</text>
+    <text x="190" y="497">Digital Logic &amp; System Design</text>
+    <text x="510" y="497">5.0</text>
+    <text x="590" y="497" font-weight="bold" fill="#00788c">A (Outstanding)</text>
+    <text x="680" y="497">10.0</text>
+
+    <rect x="50" y="510" width="700" height="30" fill="#f9faff"/>
+    <text x="70" y="530" font-family="monospace" font-weight="bold">HUL242</text>
+    <text x="190" y="530">Ethics &amp; Technology Policy</text>
+    <text x="510" y="530">3.0</text>
+    <text x="590" y="530" font-weight="bold" fill="#004ac6">A- (Excellent)</text>
+    <text x="680" y="530">9.0</text>
+
+    <rect x="50" y="543" width="700" height="30" fill="#fff"/>
+    <text x="70" y="563" font-family="monospace" font-weight="bold">AIL301</text>
+    <text x="190" y="563">Artificial Intelligence Foundations</text>
+    <text x="510" y="563">4.0</text>
+    <text x="590" y="563" font-weight="bold" fill="#00788c">A (Outstanding)</text>
+    <text x="680" y="563">10.0</text>
+  </g>
+
+  <line x1="50" y1="585" x2="750" y2="585" stroke="#ccc" stroke-width="1"/>
+
+  <!-- Cumulative GPA Summary Box -->
+  <rect x="50" y="605" width="700" height="110" fill="#f2f5ff" rx="10" stroke="#004ac6" stroke-width="1.5"/>
+  <text x="80" y="640" fill="#004ac6" font-size="14" font-weight="bold">CUMULATIVE PERFORMANCE INDEX (CGPA)</text>
+  <text x="80" y="685" fill="#004ac6" font-size="38" font-weight="900" font-family="sans-serif">3.92 <tspan font-size="18" fill="#555" font-weight="normal">/ 4.00 (9.80 / 10 Scale)</tspan></text>
+  <text x="460" y="645" fill="#333" font-size="12" font-weight="bold">Total Credits Earned: <tspan fill="#004ac6">68.0</tspan></text>
+  <text x="460" y="668" fill="#333" font-size="12" font-weight="bold">Class Rank: <tspan fill="#00788c">Rank 1 (Top 1.2% in Dept)</tspan></text>
+  <text x="460" y="691" fill="#333" font-size="12" font-weight="bold">Academic Standing: <tspan fill="#008855">First Class with Distinction</tspan></text>
+
+  <!-- Security & Verification Elements -->
+  <rect x="50" y="735" width="700" height="135" fill="#fafafa" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+  <!-- QR Code Mock -->
+  <g transform="translate(70, 750)">
+    <rect width="80" height="80" fill="#fff" stroke="#333" stroke-width="2"/>
+    <rect x="8" y="8" width="22" height="22" fill="#004ac6"/>
+    <rect x="50" y="8" width="22" height="22" fill="#004ac6"/>
+    <rect x="8" y="50" width="22" height="22" fill="#004ac6"/>
+    <rect x="36" y="36" width="10" height="10" fill="#333"/>
+    <rect x="50" y="50" width="10" height="10" fill="#333"/>
+    <rect x="62" y="62" width="10" height="10" fill="#333"/>
+  </g>
+  <text x="170" y="770" fill="#004ac6" font-size="12" font-weight="bold">DIGILOCKER &amp; NAD CRYPTOGRAPHIC ATTESTATION</text>
+  <text x="170" y="792" fill="#555" font-size="11">National Academic Depository (NAD) Document URI: in.gov.iitd/acad/2026/2024CSB1089</text>
+  <text x="170" y="812" fill="#555" font-size="11">SHA-256 Byte Verification: 0x89dc71092efb119a018742ca899017e891cb90218ab28e19c0018f4</text>
+  <text x="170" y="832" fill="#008855" font-size="11" font-weight="bold">STATUS: Cryptographically Signed by IITD Examination Controller (PKI 4096-bit Valid)</text>
+
+  <!-- Signatures -->
+  <g transform="translate(100, 930)">
+    <text x="0" y="0" font-family="'Brush Script MT',cursive" font-size="28" fill="#1b2a47">Prof. A. K. Swaminathan</text>
+    <line x1="0" y1="10" x2="190" y2="10" stroke="#333" stroke-width="1"/>
+    <text x="0" y="28" font-size="11" font-weight="bold" fill="#555">Head, Dept. of Computer Science</text>
+  </g>
+
+  <!-- Stamp -->
+  <g transform="translate(370, 915)">
+    <circle cx="35" cy="15" r="38" fill="none" stroke="#ba1a1a" stroke-width="2" stroke-dasharray="4 2"/>
+    <text x="35" y="10" fill="#ba1a1a" font-size="9" font-weight="bold" text-anchor="middle">IIT DELHI</text>
+    <text x="35" y="22" fill="#ba1a1a" font-size="8" font-weight="bold" text-anchor="middle">DEAN ACADEMICS</text>
+    <text x="35" y="34" fill="#ba1a1a" font-size="8" text-anchor="middle">OFFICIAL SEAL</text>
+  </g>
+
+  <g transform="translate(530, 930)">
+    <text x="0" y="0" font-family="'Brush Script MT',cursive" font-size="28" fill="#1b2a47">Dr. Manisha Sengupta</text>
+    <line x1="0" y1="10" x2="190" y2="10" stroke="#333" stroke-width="1"/>
+    <text x="0" y="28" font-size="11" font-weight="bold" fill="#555">Registrar &amp; Controller of Exams</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="400" y="1035" fill="#888" font-size="10" text-anchor="middle">This transcript is electronically verified via the National Scholarship Portal and DigiLocker under IT Act 2000 Section 4.</text>
+</svg>

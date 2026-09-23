@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1050" width="800" height="1050" style="background:#fff;font-family:'Times New Roman',Georgia,serif;">
+  <rect width="800" height="1050" fill="#fffdfa"/>
+  <rect x="25" y="25" width="750" height="1000" fill="none" stroke="#131b2e" stroke-width="2.5"/>
+  <rect x="35" y="35" width="730" height="980" fill="none" stroke="#b58c54" stroke-width="1.2"/>
+
+  <!-- Watermark -->
+  <text x="400" y="560" fill="rgba(181,140,84,0.05)" font-size="100" font-weight="bold" text-anchor="middle" transform="rotate(-30 400 560)">BONAFIDE 2026-27</text>
+
+  <!-- Header -->
+  <g transform="translate(400, 90)" text-anchor="middle">
+    <!-- Golden emblem -->
+    <circle cx="0" cy="0" r="36" fill="none" stroke="#b58c54" stroke-width="2"/>
+    <circle cx="0" cy="0" r="28" fill="none" stroke="#b58c54" stroke-width="1"/>
+    <circle cx="0" cy="0" r="6" fill="#b58c54"/>
+    <text y="60" font-size="24" font-weight="bold" fill="#131b2e" letter-spacing="1">INDIAN INSTITUTE OF TECHNOLOGY DELHI</text>
+    <text y="82" font-family="'Segoe UI',sans-serif" font-size="11" font-weight="600" fill="#666" letter-spacing="2">OFFICE OF THE DEAN OF ACADEMIC AFFAIRS</text>
+    <text y="98" font-family="'Segoe UI',sans-serif" font-size="10" fill="#888">HAUZ KHAS, NEW DELHI - 110 016 (INDIA)</text>
+  </g>
+
+  <line x1="60" y1="215" x2="740" y2="215" stroke="#131b2e" stroke-width="1.5"/>
+
+  <!-- Reference and Date -->
+  <g font-family="'Segoe UI',sans-serif" font-size="11" fill="#333">
+    <text x="60" y="245"><tspan font-weight="bold">Ref. No:</tspan> IITD/ACAD/2026/BF-8912</text>
+    <text x="600" y="245"><tspan font-weight="bold">Date of Issue:</tspan> 14-Aug-2026</text>
+  </g>
+
+  <!-- Title -->
+  <g transform="translate(400, 310)" text-anchor="middle">
+    <text font-size="24" font-weight="bold" fill="#131b2e" text-decoration="underline" letter-spacing="2">INSTITUTIONAL BONAFIDE CERTIFICATE</text>
+    <text y="24" font-family="'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#b58c54">ACADEMIC YEAR 2026 - 2027</text>
+  </g>
+
+  <!-- Certificate Body Paragraphs -->
+  <g font-size="16" fill="#222" font-family="'Times New Roman',Georgia,serif">
+    <text x="80" y="380">This is to certify that <tspan font-weight="bold" fill="#004ac6">PRIYA SHARMA</tspan>, daughter of Shri <tspan font-weight="bold">Ramesh Sharma</tspan>,</text>
+    <text x="60" y="415">bearing Roll Number <tspan font-weight="bold" font-family="monospace">2024CSB1089</tspan> and National Student ID <tspan font-weight="bold" font-family="monospace">PS78-2024-9982</tspan>,</text>
+    <text x="60" y="450">is a bonafide, full-time undergraduate student currently pursuing the degree of</text>
+    <text x="60" y="485"><tspan font-weight="bold" font-size="18">Bachelor of Technology (B.Tech) in Computer Science and Engineering</tspan></text>
+    <text x="60" y="520">at this Institute during the current Academic Year <tspan font-weight="bold">2026 - 2027 (Third Year / V Semester)</tspan>.</text>
+
+    <text x="80" y="575">According to our official institutional records:</text>
+    <text x="100" y="610">1. Her conduct, character, and academic discipline have been exemplary throughout.</text>
+    <text x="100" y="642">2. She maintains a Cumulative Grade Point Average (CGPA) of <tspan font-weight="bold" fill="#004ac6">3.92 / 4.00</tspan> (9.80 / 10).</text>
+    <text x="100" y="674">3. She is not receiving any disqualifying dual full-stipend central scholarship.</text>
+    <text x="100" y="706">4. The Institute has <tspan font-weight="bold">No Objection</tspan> to her applying for the National Scholarship Scheme.</text>
+
+    <text x="80" y="760">This certificate is issued upon the student's request for official submission to the</text>
+    <text x="60" y="792"><tspan font-weight="bold">National Scholarship Portal (DBT Direct Benefit Transfer Disbursement Division)</tspan>.</text>
+  </g>
+
+  <!-- Seal and Signatures -->
+  <!-- Golden Seal -->
+  <g transform="translate(180, 890)">
+    <circle cx="0" cy="0" r="44" fill="none" stroke="#b58c54" stroke-width="2"/>
+    <circle cx="0" cy="0" r="38" fill="rgba(181,140,84,0.1)"/>
+    <text y="-8" fill="#b58c54" font-family="'Segoe UI',sans-serif" font-size="8" font-weight="bold" text-anchor="middle">DEAN OF ACADEMICS</text>
+    <text y="6" fill="#b58c54" font-family="'Segoe UI',sans-serif" font-size="10" font-weight="bold" text-anchor="middle">IIT DELHI</text>
+    <text y="20" fill="#b58c54" font-family="'Segoe UI',sans-serif" font-size="8" text-anchor="middle">SEAL VALIDATED</text>
+  </g>
+
+  <g transform="translate(520, 890)">
+    <text x="0" y="-30" font-family="'Brush Script MT',cursive" font-size="34" fill="#002d72">Prof. Dr. Jayant R. Haritsa</text>
+    <line x1="-20" y1="-10" x2="220" y2="-10" stroke="#131b2e" stroke-width="1.5"/>
+    <text x="0" y="10" font-family="'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#131b2e">Dean (Academic Affairs)</text>
+    <text x="0" y="26" font-family="'Segoe UI',sans-serif" font-size="10" fill="#666">Indian Institute of Technology Delhi</text>
+  </g>
+
+  <!-- Security Footer -->
+  <rect x="50" y="960" width="700" height="35" fill="#f5f5f5" rx="4"/>
+  <text x="70" y="982" font-family="'Segoe UI',sans-serif" font-size="10" fill="#555">Verified via National DigiLocker API • Digital Certificate Serial: <tspan font-family="monospace" font-weight="bold">IITD-2026-BF8912-VERIFIED</tspan></text>
+</svg>

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1050" width="800" height="1050" style="background:#fff;font-family:'Segoe UI',Roboto,Helvetica,sans-serif;">
+  <rect width="800" height="1050" fill="#fdfefe"/>
+  <!-- Government Emblem Border -->
+  <rect x="25" y="25" width="750" height="1000" fill="#ffffff" stroke="#00788c" stroke-width="2.5" rx="8"/>
+  <rect x="35" y="35" width="730" height="980" fill="none" stroke="#2563eb" stroke-width="1" stroke-dasharray="6 3"/>
+
+  <!-- Watermark -->
+  <text x="400" y="550" fill="rgba(0,120,140,0.04)" font-size="80" font-weight="900" text-anchor="middle" transform="rotate(-30 400 550)">REVENUE DEPT GOVT OF TN</text>
+
+  <!-- Government Header -->
+  <g transform="translate(400, 75)" text-anchor="middle">
+    <!-- Emblem -->
+    <circle cx="0" cy="0" r="28" fill="#eef8fa" stroke="#00788c" stroke-width="2"/>
+    <text y="6" font-size="18" fill="#00788c" font-weight="bold">🏛️</text>
+    <text y="48" font-size="20" font-weight="bold" fill="#0b3841" letter-spacing="1">GOVERNMENT OF TAMIL NADU</text>
+    <text y="70" font-size="14" font-weight="bold" fill="#00788c">REVENUE AND DISASTER MANAGEMENT DEPARTMENT</text>
+    <text y="90" font-size="11" fill="#555">e-DISTRICT SERVICES PORTAL • TALUK OFFICE, CHENNAI NORTH</text>
+  </g>
+
+  <line x1="50" y1="185" x2="750" y2="185" stroke="#00788c" stroke-width="1.5"/>
+
+  <!-- Certificate Identifier Badge -->
+  <rect x="50" y="200" width="700" height="50" fill="#f0fafb" rx="6" stroke="#c0e5eb" stroke-width="1"/>
+  <text x="70" y="222" font-size="11" font-weight="bold" fill="#555">CERTIFICATE NUMBER:</text>
+  <text x="210" y="222" font-size="13" font-weight="bold" fill="#00788c" font-family="monospace">TN-REV-2024-89218</text>
+  <text x="450" y="222" font-size="11" font-weight="bold" fill="#555">DATE OF ISSUANCE:</text>
+  <text x="580" y="222" font-size="12" font-weight="bold" fill="#222">10-Sep-2024</text>
+  <text x="70" y="240" font-size="10" fill="#777">G.O. Ms. No. 128 Rev (SS-1) • Validity: 3 Financial Years (Valid till 31-Mar-2027)</text>
+
+  <!-- Title -->
+  <g transform="translate(400, 290)" text-anchor="middle">
+    <text font-size="22" font-weight="bold" fill="#0b3841" text-decoration="underline">ANNUAL INCOME CERTIFICATE</text>
+    <text y="22" font-size="11" font-weight="600" fill="#555">(ISSUED UNDER SECTION 15 OF THE REVENUE CODE FOR SCHOLARSHIP PURPOSES)</text>
+  </g>
+
+  <!-- Body Content -->
+  <g font-size="14" fill="#222" line-height="24">
+    <text x="80" y="355">This is to certify upon official inquiry and field revenue verification by the Revenue Inspector</text>
+    <text x="60" y="385">that Selvi <tspan font-weight="bold" fill="#004ac6">PRIYA SHARMA</tspan>, daughter of Thiru <tspan font-weight="bold">Ramesh Sharma</tspan> and Thirumathi <tspan font-weight="bold">Sunita Sharma</tspan>,</text>
+    <text x="60" y="415">residing at Door No. 42/B, Anna Nagar West Extension, Chennai, Tamil Nadu - 600101,</text>
+    <text x="60" y="445">has an Annual Gross Family Income from all sources as detailed below:</text>
+  </g>
+
+  <!-- Income Calculation Box -->
+  <rect x="60" y="475" width="680" height="150" fill="#f7fbfd" rx="8" stroke="#d0eaf0" stroke-width="1.5"/>
+  <text x="85" y="508" font-size="12" font-weight="bold" fill="#555">INCOME SOURCE CATEGORY</text>
+  <text x="520" y="508" font-size="12" font-weight="bold" fill="#555">ANNUAL AMOUNT (INR)</text>
+  <line x1="85" y1="520" x2="715" y2="520" stroke="#d0eaf0" stroke-width="1"/>
+
+  <text x="85" y="545" font-size="13">1. Income from Agriculture / Allied Activities</text>
+  <text x="570" y="545" font-size="13" font-family="monospace">₹ 0.00</text>
+
+  <text x="85" y="575" font-size="13">2. Income from Salaries, Wages &amp; Private Services</text>
+  <text x="540" y="575" font-size="13" font-family="monospace">₹ 1,80,000.00</text>
+
+  <line x1="85" y1="590" x2="715" y2="590" stroke="#00788c" stroke-width="1"/>
+  <text x="85" y="612" font-size="14" font-weight="bold" fill="#0b3841">TOTAL CERTIFIED ANNUAL FAMILY INCOME:</text>
+  <text x="500" y="612" font-size="16" font-weight="bold" fill="#00788c" font-family="monospace">₹ 1,80,000.00</text>
+
+  <!-- Income in Words -->
+  <rect x="60" y="640" width="680" height="40" fill="#eaf7f9" rx="6"/>
+  <text x="80" y="665" font-size="12" font-weight="bold" fill="#0b3841">IN WORDS: <tspan font-weight="normal">Rupees One Lakh Eighty Thousand Only</tspan></text>
+
+  <!-- Government Assurance Note -->
+  <g font-size="12" fill="#444">
+    <text x="60" y="720">The candidate qualifies under the Below Creamy Layer and Economically Weaker Section (EWS) income</text>
+    <text x="60" y="740">ceiling of ₹ 2,50,000 / ₹ 8,00,000 per annum for Central &amp; State Merit-cum-Means Scholarships.</text>
+  </g>
+
+  <!-- Digital Signature & QR Section -->
+  <rect x="60" y="780" width="680" height="150" fill="#ffffff" rx="8" stroke="#00788c" stroke-width="1"/>
+  <!-- QR Code Mock -->
+  <g transform="translate(80, 800)">
+    <rect width="90" height="90" fill="#fff" stroke="#00788c" stroke-width="2"/>
+    <rect x="8" y="8" width="24" height="24" fill="#00788c"/>
+    <rect x="58" y="8" width="24" height="24" fill="#00788c"/>
+    <rect x="8" y="58" width="24" height="24" fill="#00788c"/>
+    <rect x="40" y="40" width="12" height="12" fill="#222"/>
+    <text x="45" y="105" font-size="8" fill="#666" text-anchor="middle">SCAN TO VERIFY</text>
+  </g>
+
+  <g transform="translate(195, 805)">
+    <text font-size="12" font-weight="bold" fill="#00788c">GOVERNMENT OF TAMIL NADU e-SEVA DIGITAL SIGNATURE</text>
+    <text y="20" font-size="11" fill="#222">Digitally Signed by: <tspan font-weight="bold">K. THANGAVEL, M.A.</tspan></text>
+    <text y="38" font-size="11" fill="#555">Designation: Tahsildar, North Taluk Division</text>
+    <text y="56" font-size="11" fill="#555">Timestamp: 2024.09.10 14:22:18 +05:30</text>
+    <text y="74" font-size="10" fill="#008855" font-weight="bold">✓ Validated via National e-District Public Key Infrastructure (CCA India)</text>
+    <text y="92" font-size="9" fill="#777" font-family="monospace">SHA256: 0x4a89c28919024fbd90218ab28e19c0018f4...VALID</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="400" y="975" font-size="10" fill="#888" text-anchor="middle">Any alteration makes this certificate invalid. To verify online, visit https://edistricts.tn.gov.in/revenue</text>
+</svg>
