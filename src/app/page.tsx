@@ -228,6 +228,12 @@ export default function ScholarshipPortalDashboard() {
 
   // User Onboarding Tour & Interactive Help Guide Modal
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [tabTourKey, setTabTourKey] = useState<string | null>(null);
+
+  const handleStartTabTour = (tab: string) => {
+    setTabTourKey(tab);
+    setIsHelpOpen(true);
+  };
   const [helpStep, setHelpStep] = useState(0);
 
   const HELP_TOUR_STEPS = [
@@ -1522,7 +1528,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                 </button>
 
                 <button
-                  onClick={() => setIsHelpOpen(true)}
+                  onClick={() => {
+                    setTabTourKey(null);
+                    setIsHelpOpen(true);
+                  }}
                   className="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold text-purple-700 bg-purple-50/90 hover:bg-purple-100 transition-all border border-purple-200/70 shadow-sm"
                   title="Interactive Platform Guide (?)"
                 >
@@ -1607,7 +1616,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                 </button>
 
                 <button
-                  onClick={() => setIsHelpOpen(true)}
+                  onClick={() => {
+                    setTabTourKey(null);
+                    setIsHelpOpen(true);
+                  }}
                   className="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold text-purple-700 bg-purple-50/90 hover:bg-purple-100 transition-all border border-purple-200/70 shadow-sm"
                   title="Admin Operations Guide (?)"
                 >
@@ -1697,7 +1709,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsHelpOpen(true)}
+              onClick={() => {
+                setTabTourKey(null);
+                setIsHelpOpen(true);
+              }}
               className="h-8 px-2.5 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs gap-1.5 rounded-lg shadow-sm font-bold transition-all"
               title={activeRole === "ADMIN" ? "Admin Operations Guide (?)" : "Interactive Platform Guide (?)"}
             >
@@ -1836,7 +1851,16 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div id="tour-dashboard-actions" className="flex flex-wrap items-center gap-2.5">
+                    <button
+                      onClick={() => handleStartTabTour("dashboard")}
+                      className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-semibold transition-all shadow-sm"
+                      title="Learn what each section in Dashboard does"
+                    >
+                      <HelpCircle className="h-4 w-4 text-purple-600" />
+                      <span>Dashboard Guide (?)</span>
+                    </button>
+
                     <button
                       onClick={() => refreshData()}
                       className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#f2f3ff] text-[#131b2e] hover:bg-[#e2e7ff] text-xs font-semibold transition-all shadow-sm"
@@ -2103,13 +2127,15 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "STUDENT" && activeTab === "scholarships" && (
             <motion.div
-              id="tour-scholarships-catalog"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div
+                id="tour-scholarships-catalog"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-[#eaedff] shadow-sm"
+              >
                 <div>
                   <h1 className="text-2xl font-bold text-[#131b2e] font-heading tracking-tight">
                     Scholarship Opportunities Catalog
@@ -2119,7 +2145,16 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => handleStartTabTour("scholarships")}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-semibold transition-all shadow-sm"
+                    title="Scholarships & CGPA Guide (?)"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5 text-purple-600" />
+                    <span>Scholarships Guide (?)</span>
+                  </button>
+
                   <button
                     onClick={() => setSmartMatchOnly(!smartMatchOnly)}
                     className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
@@ -2165,7 +2200,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
 
               {/* Schemes Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredScholarships.map((sch) => {
+                {filteredScholarships.map((sch, schIdx) => {
                   const elig = checkEligibility(sch);
                   const isClosed = sch.status === "CLOSED" || sch.remainingSlots <= 0;
                   const alreadyApplied = studentApplications.some((a) => a.scholarshipId === sch.id);
@@ -2224,7 +2259,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                         </div>
 
                         {/* Explainable Match Checklist */}
-                        <div className="space-y-1.5 pt-1 text-xs">
+                        <div
+                          id={schIdx === 0 ? "tour-scholarships-cgpa-guard" : undefined}
+                          className="space-y-1.5 pt-1 text-xs"
+                        >
                           <div className="flex items-center justify-between text-[#434655]">
                             <span className="flex items-center gap-1.5">
                               {elig.gpaOk ? (
@@ -2253,7 +2291,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                         </div>
                       </div>
 
-                      <div className="pt-4 mt-3 border-t border-[#eaedff]">
+                      <div
+                        id={schIdx === 0 ? "tour-scholarships-apply-card" : undefined}
+                        className="pt-4 mt-3 border-t border-[#eaedff]"
+                      >
                         {isClosed ? (
                           <Button disabled className="w-full bg-zinc-100 text-zinc-400 text-xs font-semibold h-9 rounded-lg">
                             <Lock className="h-3.5 w-3.5 mr-1" /> Program Full (Closed)
@@ -4044,14 +4085,16 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
 
             return (
               <motion.div
-                id="tour-my-applications"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
                 {/* Top Banner & Context */}
-                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pt-1">
+                <div
+                  id="tour-my-applications"
+                  className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pt-1 p-5 rounded-2xl bg-white border border-[#eaedff] shadow-sm"
+                >
                   <div>
                     <div className="flex items-center gap-1.5 mb-1.5">
                       <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-[#004ac6] text-white">
@@ -4068,7 +4111,18 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                       Track submissions, document verification stages, and Direct Benefit Transfer (DBT) disbursals in real time.
                     </p>
                   </div>
-                  <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => handleStartTabTour("my-applications")}
+                      className="border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl h-10 px-3.5 gap-1.5 shadow-sm"
+                      title="Applications & Award Letters Guide (?)"
+                    >
+                      <HelpCircle className="h-4 w-4 text-purple-600" />
+                      <span>Applications Guide (?)</span>
+                    </Button>
+
                     <Button
                       type="button"
                       variant="outline"
@@ -4561,7 +4615,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                             {/* In-Card Action Buttons */}
                             <div className="mt-4 pt-4 border-t border-[#eaedff] flex flex-wrap items-center justify-between gap-3">
                               {isAppApproved ? (
-                                <div className="flex flex-wrap items-center gap-2">
+                                <div id="tour-apps-award-letter" className="flex flex-wrap items-center gap-2">
                                   <Button
                                     size="sm"
                                     onClick={() => setSelectedAwardApp(app)}
@@ -4590,7 +4644,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                                   </Button>
                                 </div>
                               ) : isAppRejected ? (
-                                <div className="flex flex-wrap items-center gap-2">
+                                <div id="tour-apps-rejection-appeal" className="flex flex-wrap items-center gap-2">
                                   <Button
                                     size="sm"
                                     className="bg-[#ba1a1a] hover:bg-[#93000a] text-white text-xs font-semibold rounded-xl h-8 px-3.5 gap-1.5 shadow-sm"
@@ -4768,7 +4822,6 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "STUDENT" && activeTab === "documents" && (
             <motion.div
-              id="tour-document-vault"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -4828,7 +4881,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               ) : (
                 <>
                   {/* Top Banner with Ambient Glow (Stitch Spec) */}
-                  <div className="relative w-full rounded-2xl overflow-hidden bg-white p-6 md:p-8 shadow-sm border border-[#eaedff]">
+                  <div
+                    id="tour-document-vault"
+                    className="relative w-full rounded-2xl overflow-hidden bg-white p-6 md:p-8 shadow-sm border border-[#eaedff]"
+                  >
                     <div className="absolute -right-16 -top-16 w-64 h-64 bg-[#2563eb]/10 rounded-full blur-3xl pointer-events-none" />
                     <div className="absolute right-32 -bottom-20 w-56 h-56 bg-[#712ae2]/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -4853,6 +4909,16 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                       </div>
 
                       <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => handleStartTabTour("documents")}
+                          className="h-11 px-3.5 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg shadow-sm gap-1.5 transition-all"
+                          title="Learn how Document Vault works"
+                        >
+                          <HelpCircle className="h-4 w-4 text-purple-600" />
+                          <span>Vault Guide (?)</span>
+                        </Button>
+
                         <Button
                           onClick={handleSyncDigiLocker}
                           disabled={isSyncingVault}
@@ -4960,7 +5026,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="tour-docs-specimen-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Document Card 1: Annual Family Income Certificate */}
                       <div className="flex flex-col justify-between p-6 rounded-2xl bg-white border border-[#eaedff] shadow-sm hover:shadow-md transition-all group">
                         <div className="space-y-3">
@@ -5307,6 +5373,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                       {/* Right: Drag and Drop Upload Zone (Stitch Spec) */}
                       <div className="lg:w-1/2 flex flex-col justify-center">
                         <div
+                          id="tour-docs-upload-slot"
                           onDragOver={(e) => e.preventDefault()}
                           onDrop={(e) => {
                             e.preventDefault();
@@ -5928,7 +5995,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               className="space-y-6"
             >
               {/* Hero Banner with Dynamic Gradient & Ambient Glows */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#004ac6] via-[#2563eb] to-[#712ae2] text-white p-6 md:p-8 shadow-lg">
+              <div
+                id="tour-profile-hero"
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#004ac6] via-[#2563eb] to-[#712ae2] text-white p-6 md:p-8 shadow-lg"
+              >
                 <div className="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
                 <div className="absolute -bottom-16 -left-10 w-72 h-72 rounded-full bg-[#8a4cfc]/20 blur-3xl pointer-events-none" />
                 
@@ -6001,7 +6071,16 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div id="tour-profile-download-actions" className="flex flex-wrap items-center gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => handleStartTabTour("profile")}
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold text-xs border border-white/30 shadow-md backdrop-blur-md"
+                        title="Profile Dossier Guide (?)"
+                      >
+                        <HelpCircle className="h-4 w-4" />
+                        <span>Profile Guide (?)</span>
+                      </Button>
                       <Button
                         onClick={() => downloadStudentProfilePdf(student, bonafideStatus)}
                         className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-white text-[#004ac6] hover:bg-slate-50 font-bold text-xs shadow-md"
@@ -6800,7 +6879,6 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "admin-overview" && (
             <motion.div
-              id="tour-admin-overview-stats"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -6816,7 +6894,18 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div id="tour-admin-overview-actions" className="flex flex-wrap items-center gap-2">
+                  <Button
+                    onClick={() => handleStartTabTour("admin-overview")}
+                    variant="outline"
+                    size="sm"
+                    className="h-9 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg shadow-sm gap-1.5"
+                    title="Admin Overview Guide (?)"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5 text-purple-600" />
+                    <span>Overview Guide (?)</span>
+                  </Button>
+
                   <Button
                     onClick={handleSeedRandom}
                     variant="outline"
@@ -6840,7 +6929,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               </div>
 
               {/* KPI Strip */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div id="tour-admin-overview-stats" className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="p-4 rounded-2xl bg-white border border-[#eaedff] shadow-sm">
                   <div className="text-xs font-medium text-[#737686] mb-1">Active Schemes</div>
                   <div className="text-2xl font-bold text-[#131b2e] font-heading">{scholarships.length}</div>
@@ -7019,13 +7108,15 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "manage-schemes" && (
             <motion.div
-              id="tour-admin-manage-schemes"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div
+                id="tour-admin-manage-schemes"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+              >
                 <div>
                   <h1 className="text-2xl font-bold text-[#131b2e] font-heading tracking-tight">
                     Manage Scholarship Schemes & Quota Rules
@@ -7035,7 +7126,18 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    onClick={() => handleStartTabTour("manage-schemes")}
+                    variant="outline"
+                    size="sm"
+                    className="h-9 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg shadow-sm gap-1.5"
+                    title="Manage Schemes Guide (?)"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5 text-purple-600" />
+                    <span>Schemes Guide (?)</span>
+                  </Button>
+
                   <Button
                     onClick={handleSeedRandom}
                     variant="outline"
@@ -7060,7 +7162,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
 
               {/* Schemes Matrix Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {scholarships.map((sch) => {
+                {scholarships.map((sch, schIdx) => {
                   const percentUsed =
                     sch.totalSlots > 0
                       ? Math.round(((sch.totalSlots - sch.remainingSlots) / sch.totalSlots) * 100)
@@ -7069,6 +7171,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   return (
                     <div
                       key={sch.id}
+                      id={schIdx === 0 ? "tour-admin-scheme-card-item" : undefined}
                       className="rounded-2xl bg-white border border-[#eaedff] p-5 space-y-3 flex flex-col justify-between shadow-sm hover:shadow-md transition-all"
                     >
                       <div className="space-y-3">
@@ -7152,14 +7255,16 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "analytics" && (
             <motion.div
-              id="tour-admin-audit-ledger"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
               {/* Top Banner with Ambient AI Glow */}
-              <div className="relative overflow-hidden rounded-2xl bg-white p-6 md:p-8 shadow-sm border border-[#eaedff]">
+              <div
+                id="tour-admin-audit-ledger"
+                className="relative overflow-hidden rounded-2xl bg-white p-6 md:p-8 shadow-sm border border-[#eaedff]"
+              >
                 <div className="absolute -right-20 -top-24 w-96 h-96 rounded-full bg-[#2563eb]/10 blur-3xl pointer-events-none" />
                 <div className="absolute right-48 -bottom-20 w-80 h-80 rounded-full bg-[#712ae2]/10 blur-3xl pointer-events-none" />
 
@@ -7183,6 +7288,17 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
 
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
+                      onClick={() => handleStartTabTour("analytics")}
+                      variant="outline"
+                      size="sm"
+                      className="h-10 px-3.5 rounded-lg border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold shadow-sm gap-1.5 transition-all"
+                      title="Audit Ledger Guide (?)"
+                    >
+                      <HelpCircle className="h-4 w-4 text-purple-600" />
+                      <span>Ledger Guide (?)</span>
+                    </Button>
+
+                    <Button
                       onClick={() => {
                         handleAuditFullChain();
                         refreshData();
@@ -7195,6 +7311,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                       <span>{isVerifyingHash || isAuditingChain ? "Auditing Chain..." : "Re-sync & Audit Chain"}</span>
                     </Button>
                     <Button
+                      id="tour-admin-export-zip-guide"
                       onClick={handleExportAuditZip}
                       className="h-10 px-4 rounded-lg bg-[#2563eb] hover:bg-[#004ac6] text-white text-xs font-semibold transition-all shadow-sm gap-1.5"
                     >
@@ -7824,13 +7941,15 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "ADMIN" && activeTab === "applications-review" && (
             <motion.div
-              id="tour-admin-app-review"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-[#eaedff]">
+              <div
+                id="tour-admin-app-review"
+                className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-[#eaedff]"
+              >
                 <div>
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#737686]">
                     <span className="w-2 h-2 rounded-full bg-[#004ac6] animate-pulse" />
@@ -7841,7 +7960,18 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   </h1>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    onClick={() => handleStartTabTour("applications-review")}
+                    variant="outline"
+                    size="sm"
+                    className="h-8 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg shadow-sm gap-1.5"
+                    title="Applications Review Guide (?)"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5 text-purple-600" />
+                    <span>Review Guide (?)</span>
+                  </Button>
+
                   {(["ALL", "PENDING", "UNDER_REVIEW", "APPROVED", "REJECTED"] as const).map(
                     (st) => (
                       <button
@@ -7932,7 +8062,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               </div>
 
               {/* Review Queue Table */}
-              <div className="rounded-2xl border border-[#eaedff] bg-white overflow-hidden shadow-sm">
+              <div id="tour-admin-review-actions-guide" className="rounded-2xl border border-[#eaedff] bg-white overflow-hidden shadow-sm">
                 <Table>
                   <TableHeader className="bg-[#f2f3ff]">
                     <TableRow className="border-[#eaedff]">
@@ -9457,8 +9587,12 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
       {/* ========================================================================= */}
       <InteractiveTour
         isOpen={isHelpOpen}
-        onClose={() => setIsHelpOpen(false)}
+        onClose={() => {
+          setIsHelpOpen(false);
+          setTabTourKey(null);
+        }}
         role={activeRole}
+        tabTourKey={tabTourKey}
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab)}
       />
@@ -9466,7 +9600,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
       {/* Floating Tour Guide Launcher Button */}
       <button
         type="button"
-        onClick={() => setIsHelpOpen(true)}
+        onClick={() => {
+          setTabTourKey(null);
+          setIsHelpOpen(true);
+        }}
         className="fixed bottom-6 right-6 z-40 p-3.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white shadow-xl hover:shadow-2xl transition-all flex items-center gap-2 group hover:scale-105 active:scale-95 border-2 border-white/80"
         title={activeRole === "ADMIN" ? "Interactive Admin Guide (?)" : "Interactive Platform Guide (?)"}
       >
