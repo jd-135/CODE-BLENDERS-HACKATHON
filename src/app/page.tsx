@@ -64,6 +64,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { InteractiveTour } from "@/components/InteractiveTour";
 import {
   Award,
   BookOpen,
@@ -1669,7 +1670,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               <div className="px-3 py-1 text-[11px] uppercase font-bold tracking-wider text-[#737686]">
                 Student Portal
               </div>
-              <nav className="flex flex-col gap-1">
+              <nav id="tour-sidebar-nav" className="flex flex-col gap-1">
                 <button
                   onClick={() => setActiveTab("dashboard")}
                   className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold transition-all ${
@@ -1768,18 +1769,15 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                 </button>
 
                 <button
-                  onClick={() => {
-                    setHelpStep(0);
-                    setIsHelpOpen(true);
-                  }}
-                  className="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold text-[#004ac6] bg-blue-50/70 hover:bg-blue-100/90 transition-all border border-blue-200/50"
-                  title="How this website works & Navigation Tour"
+                  onClick={() => setIsHelpOpen(true)}
+                  className="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold text-purple-700 bg-purple-50/90 hover:bg-purple-100 transition-all border border-purple-200/70 shadow-sm"
+                  title="Interactive Platform Guide (?)"
                 >
                   <div className="flex items-center gap-3">
-                    <HelpCircle className="h-4 w-4 text-[#004ac6]" />
-                    <span>How It Works (?)</span>
+                    <HelpCircle className="h-4 w-4 text-purple-600" />
+                    <span>Platform Guide (?)</span>
                   </div>
-                  <Badge className="bg-[#004ac6] text-white text-[9px] px-1.5 py-0 font-bold">
+                  <Badge className="bg-purple-600 text-white text-[9px] px-1.5 py-0 font-bold shadow-sm">
                     Tour
                   </Badge>
                 </button>
@@ -1906,7 +1904,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
       {/* ========================================================================= */}
       <div className="md:pl-72 flex flex-col min-h-screen">
         {/* Top Sticky Header */}
-        <header className="sticky top-0 z-40 h-16 bg-[#ffffff]/90 backdrop-blur-xl border-b border-[#eaedff] shadow-[0_1px_8px_rgba(0,0,0,0.04)] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <header id="tour-top-header" className="sticky top-0 z-40 h-16 bg-[#ffffff]/90 backdrop-blur-xl border-b border-[#eaedff] shadow-[0_1px_8px_rgba(0,0,0,0.04)] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           {/* Search bar */}
           <div className="flex items-center gap-3 flex-1 max-w-lg">
             <div className="md:hidden flex items-center gap-2">
@@ -1932,15 +1930,12 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                setHelpStep(0);
-                setIsHelpOpen(true);
-              }}
-              className="h-8 px-2.5 border-[#004ac6]/30 bg-blue-50 hover:bg-blue-100 text-[#004ac6] text-xs gap-1.5 rounded-lg shadow-sm font-bold transition-all"
-              title="Interactive Platform Tour & Navigation Guide"
+              onClick={() => setIsHelpOpen(true)}
+              className="h-8 px-2.5 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs gap-1.5 rounded-lg shadow-sm font-bold transition-all"
+              title="Interactive Platform Guide (?)"
             >
-              <HelpCircle className="h-3.5 w-3.5 text-[#004ac6]" />
-              <span className="hidden sm:inline">Tour &amp; Help</span>
+              <HelpCircle className="h-3.5 w-3.5 text-purple-600" />
+              <span className="hidden sm:inline">Platform Guide</span>
               <span className="sm:hidden font-bold">?</span>
             </Button>
 
@@ -2085,7 +2080,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               </div>
 
               {/* Profile Completion & Verified Credentials Card */}
-              <div className="relative w-full rounded-2xl bg-[#ffffff] p-6 shadow-sm border border-[#eaedff]">
+              <div id="tour-profile-stats" className="relative w-full rounded-2xl bg-[#ffffff] p-6 shadow-sm border border-[#eaedff]">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                   <div className="flex-1 flex flex-col gap-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
@@ -2339,6 +2334,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "STUDENT" && activeTab === "scholarships" && (
             <motion.div
+              id="tour-scholarships-catalog"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -4279,6 +4275,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
 
             return (
               <motion.div
+                id="tour-my-applications"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -5005,6 +5002,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           {/* ========================================================================= */}
           {activeRole === "STUDENT" && activeTab === "documents" && (
             <motion.div
+              id="tour-document-vault"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -9625,128 +9623,27 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
       </Dialog>
 
       {/* ========================================================================= */}
-      {/* DIALOG: USER ONBOARDING TOUR & INTERACTIVE HELP GUIDE                     */}
+      {/* INTERACTIVE SPOTLIGHT PLATFORM TOUR (FLOATING & ELEMENT-HIGHLIGHTED)      */}
       {/* ========================================================================= */}
-      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-        <DialogContent className="bg-white border-[#eaedff] text-[#131b2e] max-w-xl p-6 rounded-2xl shadow-2xl">
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#004ac6] text-xs font-bold uppercase tracking-wider">
-                <HelpCircle className="h-4 w-4" /> Platform Guide &amp; Tour
-              </div>
-              <Badge className="bg-[#004ac6]/10 text-[#004ac6] border-none text-[11px] font-bold">
-                Step {helpStep + 1} of {HELP_TOUR_STEPS.length}
-              </Badge>
-            </div>
-            <DialogTitle className="text-[#131b2e] text-lg font-bold font-heading mt-2">
-              {HELP_TOUR_STEPS[helpStep].title}
-            </DialogTitle>
-            <DialogDescription className="text-[#737686] text-xs">
-              {HELP_TOUR_STEPS[helpStep].tag} • Navigation Walkthrough
-            </DialogDescription>
-          </DialogHeader>
+      <InteractiveTour
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab)}
+      />
 
-          <div className="space-y-4 py-3">
-            {/* Step Visual Indicator */}
-            <div className="flex items-center gap-1.5 w-full">
-              {HELP_TOUR_STEPS.map((s, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setHelpStep(idx)}
-                  className={`h-1.5 rounded-full transition-all flex-1 ${
-                    idx === helpStep
-                      ? "bg-[#004ac6] w-6"
-                      : idx < helpStep
-                      ? "bg-[#712ae2]"
-                      : "bg-[#eaedff]"
-                  }`}
-                  title={`Step ${idx + 1}: ${s.title}`}
-                />
-              ))}
-            </div>
-
-            {/* Step Body */}
-            <div className="p-4 rounded-xl bg-[#faf8ff] border border-[#eaedff] space-y-3">
-              <p className="text-xs text-[#33312e] leading-relaxed">
-                {HELP_TOUR_STEPS[helpStep].desc}
-              </p>
-
-              <div className="space-y-2 pt-1">
-                <div className="text-[11px] uppercase font-bold text-[#434655] tracking-wider">
-                  Key Capabilities &amp; Rules:
-                </div>
-                {HELP_TOUR_STEPS[helpStep].highlights.map((h, hIdx) => (
-                  <div key={hIdx} className="flex items-start gap-2 text-xs text-[#434655]">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{h}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick jump to tab button */}
-            <div className="flex items-center justify-between text-xs px-1">
-              <span className="text-[#737686] text-[11px]">
-                Target Section: <strong className="text-[#131b2e]">{HELP_TOUR_STEPS[helpStep].tabName}</strong>
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab(HELP_TOUR_STEPS[helpStep].tabKey);
-                  setIsHelpOpen(false);
-                }}
-                className="text-[11px] text-[#004ac6] hover:underline font-bold flex items-center gap-1"
-              >
-                <span>Jump to this tab</span>
-                <ChevronRight className="h-3 w-3" />
-              </button>
-            </div>
-          </div>
-
-          <DialogFooter className="flex flex-row items-center justify-between gap-2 pt-3 border-t border-[#eaedff]">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={helpStep === 0}
-              onClick={() => setHelpStep((prev) => Math.max(0, prev - 1))}
-              className="border-[#eaedff] bg-white hover:bg-[#f2f3ff] text-[#131b2e] text-xs rounded-lg disabled:opacity-40"
-            >
-              ← Previous
-            </Button>
-
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsHelpOpen(false)}
-                className="text-xs text-[#737686] hover:text-[#131b2e]"
-              >
-                Close
-              </Button>
-
-              {helpStep < HELP_TOUR_STEPS.length - 1 ? (
-                <Button
-                  type="button"
-                  onClick={() => setHelpStep((prev) => prev + 1)}
-                  className="bg-[#004ac6] hover:bg-[#003ea8] text-white text-xs font-semibold rounded-lg shadow-sm gap-1"
-                >
-                  <span>Next Step</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={() => setIsHelpOpen(false)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm gap-1"
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  <span>Finish Tour</span>
-                </Button>
-              )}
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Floating Tour Guide Launcher Button */}
+      <button
+        type="button"
+        onClick={() => setIsHelpOpen(true)}
+        className="fixed bottom-6 right-6 z-40 p-3.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white shadow-xl hover:shadow-2xl transition-all flex items-center gap-2 group hover:scale-105 active:scale-95 border-2 border-white/80"
+        title="Interactive Platform Guide (?)"
+      >
+        <HelpCircle className="w-5 h-5" />
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-semibold whitespace-nowrap">
+          Platform Guide (?)
+        </span>
+      </button>
     </div>
   );
 }
