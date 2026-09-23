@@ -15,8 +15,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "PS78 — Smart Scholarship Application & Slot Management Platform",
-  description: "End-to-end scholarship discovery, multilateral criteria validation, application tracking, and automated slot-decrement award decisions.",
+  title: "Scholarship Portal",
+  description: "National Scholarship Trust - Smart Scholarship Application & Slot Management Platform",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    apple: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+  },
 };
 
 export default function RootLayout({
