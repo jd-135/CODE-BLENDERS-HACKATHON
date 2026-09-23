@@ -445,7 +445,7 @@ export default function ScholarshipPortalDashboard() {
   const [newAmount, setNewAmount] = useState("10000");
   const [newSlots, setNewSlots] = useState("3");
   const [newMinGpa, setNewMinGpa] = useState("3.50");
-  const [newMaxIncome, setNewMaxIncome] = useState("65000");
+  const [newMaxIncome, setNewMaxIncome] = useState("250000");
   const [adminActionNotice, setAdminActionNotice] = useState<string | null>(null);
 
   const refreshData = async (targetPersonaId?: string) => {
@@ -939,7 +939,10 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
         const createdTitle = newTitle.trim();
         setNewTitle("");
         setNewDescription("");
-        setAdminActionNotice(`✅ Successfully published "${createdTitle}" to Database & Ledger!`);
+        const notifiedCount = await db.notifyEligibleStudents(created);
+        setAdminActionNotice(
+          `✅ Successfully published "${createdTitle}" to Database & Ledger! ${notifiedCount} eligible student${notifiedCount === 1 ? "" : "s"} notified.`
+        );
         setTimeout(() => setAdminActionNotice(null), 5000);
         await refreshData();
       } catch (err: any) {

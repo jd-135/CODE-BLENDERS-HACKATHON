@@ -543,8 +543,8 @@ export function InteractiveTour({
 
     const el = document.getElementById(currentStep.targetId);
     const cardEl = cardRef.current;
-    const cardWidth = cardEl ? cardEl.offsetWidth : 420;
-    const cardHeight = cardEl ? cardEl.offsetHeight : 340;
+    const cardWidth = Math.min(cardEl ? cardEl.offsetWidth : 390, window.innerWidth - 32);
+    const cardHeight = Math.min(cardEl ? cardEl.offsetHeight : 310, window.innerHeight - 32);
 
     if (!el) {
       // Center fallback
@@ -558,14 +558,13 @@ export function InteractiveTour({
     }
 
     const rect = el.getBoundingClientRect();
-    const pad = 8;
+    const pad = 6;
     const sTop = Math.max(0, rect.top - pad);
     const sLeft = Math.max(0, rect.left - pad);
     const sWidth = Math.min(window.innerWidth - sLeft, rect.width + pad * 2);
 
-    // CRITICAL BUGFIX: Never let spotlight expand past 50% of viewport or 440px
-    // This prevents the spotlight from ballooning on large card grids or page containers.
-    const maxSpotlightHeight = Math.min(window.innerHeight * 0.50, 440);
+    // Limit spotlight height so it never overwhelms viewport and leaves plenty of space for the card
+    const maxSpotlightHeight = Math.min(window.innerHeight * 0.32, 260);
     const sHeight = Math.min(rect.height + pad * 2, maxSpotlightHeight);
 
     setSpotlight({
@@ -575,75 +574,131 @@ export function InteractiveTour({
       height: sHeight,
     });
 
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const GAP = 12;
+
+    // Strict bounding-box collision detection
+    const isColliding = (cTop: number, cLeft: number, buffer = 6): boolean => {
+      const cRight = cLeft + cardWidth;
+      const cBottom = cTop + cardHeight;
+      const sRight = sLeft + sWidth;
+      const sBottom = sTop + sHeight;
+
+      return !(
+        cRight < sLeft - buffer ||
+        cLeft > sRight + buffer ||
+        cBottom < sTop - buffer ||
+        cTop > sBottom + buffer
+      );
+    };
+
+    type Candidate = {
+      placement: "bottom" | "top" | "left" | "right";
+      top: number;
+      left: number;
+      fits: boolean;
+      collides: boolean;
+    };
+
+    const candidates: Record<"bottom" | "top" | "left" | "right", Candidate> = {
+      bottom: {
+        placement: "bottom",
+        top: sTop + sHeight + GAP,
+        left: Math.max(16, Math.min(sLeft, vw - cardWidth - 16)),
+        fits: sTop + sHeight + GAP + cardHeight <= vh - 16,
+        collides: isColliding(sTop + sHeight + GAP, Math.max(16, Math.min(sLeft, vw - cardWidth - 16))),
+      },
+      top: {
+        placement: "top",
+        top: sTop - cardHeight - GAP,
+        left: Math.max(16, Math.min(sLeft, vw - cardWidth - 16)),
+        fits: sTop - cardHeight - GAP >= 16,
+        collides: isColliding(sTop - cardHeight - GAP, Math.max(16, Math.min(sLeft, vw - cardWidth - 16))),
+      },
+      right: {
+        placement: "right",
+        top: Math.max(16, Math.min(sTop, vh - cardHeight - 16)),
+        left: sLeft + sWidth + GAP,
+        fits: sLeft + sWidth + GAP + cardWidth <= vw - 16,
+        collides: isColliding(Math.max(16, Math.min(sTop, vh - cardHeight - 16)), sLeft + sWidth + GAP),
+      },
+      left: {
+        placement: "left",
+        top: Math.max(16, Math.min(sTop, vh - cardHeight - 16)),
+        left: sLeft - cardWidth - GAP,
+        fits: sLeft - cardWidth - GAP >= 16,
+        collides: isColliding(Math.max(16, Math.min(sTop, vh - cardHeight - 16)), sLeft - cardWidth - GAP),
+      },
+    };
+
     const pref = currentStep.preferredPlacement || "bottom";
-    let computedTop = 0;
-    let computedLeft = 0;
-    let computedPlacement: "bottom" | "top" | "left" | "right" | "center" = pref;
+    const orderMap: Record<"bottom" | "top" | "left" | "right" | "center", ("bottom" | "top" | "left" | "right")[]> = {
+      bottom: ["bottom", "top", "right", "left"],
+      top: ["top", "bottom", "right", "left"],
+      right: ["right", "bottom", "left", "top"],
+      left: ["left", "bottom", "right", "top"],
+      center: ["bottom", "top", "right", "left"],
+    };
 
-    const spaceBelow = window.innerHeight - (sTop + sHeight);
-    const spaceAbove = sTop;
+    const searchOrder = orderMap[pref] || ["bottom", "top", "right", "left"];
+    let chosen: Candidate | null = null;
 
-    if (pref === "bottom") {
-      if (spaceBelow >= cardHeight + 24) {
-        // Fits comfortably below spotlight
-        computedTop = sTop + sHeight + 14;
-        computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 16));
-        computedPlacement = "bottom";
-      } else if (spaceAbove >= cardHeight + 24) {
-        // Fits comfortably above spotlight
-        computedTop = Math.max(16, sTop - cardHeight - 14);
-        computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 16));
-        computedPlacement = "top";
-      } else {
-        // Limited space: dock securely inside viewport bottom
-        computedTop = Math.max(16, window.innerHeight - cardHeight - 20);
-        computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 20));
-        computedPlacement = "bottom";
+    // 1st Priority: Direction that fits in viewport AND does not collide with the target element
+    for (const dir of searchOrder) {
+      const c = candidates[dir];
+      if (c.fits && !c.collides) {
+        chosen = c;
+        break;
       }
-    } else if (pref === "right") {
-      const spaceRight = window.innerWidth - (sLeft + sWidth);
-      if (spaceRight >= cardWidth + 24) {
-        computedLeft = sLeft + sWidth + 16;
-        computedTop = Math.max(16, Math.min(sTop + 10, window.innerHeight - cardHeight - 16));
-        computedPlacement = "right";
-      } else if (spaceBelow >= cardHeight + 24) {
-        computedTop = sTop + sHeight + 14;
-        computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 16));
-        computedPlacement = "bottom";
-      } else {
-        computedTop = Math.max(16, window.innerHeight - cardHeight - 20);
-        computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 20));
-        computedPlacement = "bottom";
-      }
-    } else if (pref === "top") {
-      if (spaceAbove >= cardHeight + 24) {
-        computedTop = Math.max(16, sTop - cardHeight - 14);
-        computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 16));
-        computedPlacement = "top";
-      } else {
-        computedTop = sTop + sHeight + 14;
-        computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 16));
-        computedPlacement = "bottom";
-      }
-    } else {
-      computedTop = sTop + sHeight + 14;
-      computedLeft = Math.max(16, Math.min(sLeft, window.innerWidth - cardWidth - 16));
-      computedPlacement = "bottom";
     }
 
-    // ABSOLUTE STRICT VIEWPORT CLAMP:
-    // Ensures card is ALWAYS 100% visible and interactive inside the browser window
-    computedTop = Math.max(16, Math.min(computedTop, window.innerHeight - cardHeight - 20));
-    computedLeft = Math.max(16, Math.min(computedLeft, window.innerWidth - cardWidth - 20));
+    // 2nd Priority: Direction that fits inside viewport
+    if (!chosen) {
+      for (const dir of searchOrder) {
+        const c = candidates[dir];
+        if (c.fits) {
+          chosen = c;
+          break;
+        }
+      }
+    }
+
+    let finalTop = 0;
+    let finalLeft = 0;
+    let finalPlacement: "bottom" | "top" | "left" | "right" | "center" = pref;
+
+    if (chosen) {
+      finalTop = chosen.top;
+      finalLeft = chosen.left;
+      finalPlacement = chosen.placement;
+    } else {
+      // Fallback: Place in direction with largest space (below or above) without pushing all the way down
+      const spaceBelow = vh - (sTop + sHeight);
+      const spaceAbove = sTop;
+      if (spaceBelow >= spaceAbove) {
+        finalTop = sTop + sHeight + 8;
+        finalLeft = Math.max(16, Math.min(sLeft, vw - cardWidth - 16));
+        finalPlacement = "bottom";
+      } else {
+        finalTop = Math.max(16, sTop - cardHeight - 8);
+        finalLeft = Math.max(16, Math.min(sLeft, vw - cardWidth - 16));
+        finalPlacement = "top";
+      }
+    }
+
+    // Viewport guard clamp
+    finalTop = Math.max(16, Math.min(finalTop, vh - cardHeight - 16));
+    finalLeft = Math.max(16, Math.min(finalLeft, vw - cardWidth - 16));
 
     setCardPos({
-      top: computedTop,
-      left: computedLeft,
-      placement: computedPlacement,
+      top: finalTop,
+      left: finalLeft,
+      placement: finalPlacement,
     });
   }, [isOpen, currentStep]);
 
-  // When step changes, handle tab switching and smooth scrolling
+  // When step changes, handle tab switching and top-anchored smooth scrolling
   useEffect(() => {
     if (!isOpen || !currentStep) return;
 
@@ -654,10 +709,14 @@ export function InteractiveTour({
     const timer1 = setTimeout(() => {
       const el = document.getElementById(currentStep.targetId);
       if (el) {
-        el.scrollIntoView({
+        // Anchor element ~95px from top of viewport, leaving ample room below
+        const navOffset = 95;
+        const rect = el.getBoundingClientRect();
+        const absoluteElementTop = rect.top + window.scrollY;
+        const targetScrollY = Math.max(0, absoluteElementTop - navOffset);
+        window.scrollTo({
+          top: targetScrollY,
           behavior: "smooth",
-          block: "center",
-          inline: "nearest",
         });
       }
       updatePosition();
@@ -667,9 +726,14 @@ export function InteractiveTour({
       updatePosition();
     }, 450);
 
+    const timer3 = setTimeout(() => {
+      updatePosition();
+    }, 750);
+
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
+      clearTimeout(timer3);
     };
   }, [isOpen, currentStepIndex, currentStep, activeTab, onTabChange, updatePosition]);
 
@@ -786,7 +850,7 @@ export function InteractiveTour({
       {/* Floating Tour Guide Card */}
       <div
         ref={cardRef}
-        className="fixed z-[10000] w-[420px] max-w-[92vw] max-h-[88vh] bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col transition-all duration-300 ease-out"
+        className="fixed z-[10000] w-[390px] max-w-[92vw] max-h-[82vh] bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col transition-all duration-300 ease-out"
         style={{
           top: cardPos.top,
           left: cardPos.left,
@@ -816,7 +880,7 @@ export function InteractiveTour({
         />
 
         {/* Card Content with scroll protection */}
-        <div className="p-6 overflow-y-auto max-h-[calc(88vh-20px)] flex flex-col justify-between">
+        <div className="p-5 overflow-y-auto max-h-[calc(82vh-20px)] flex flex-col justify-between">
           <div>
             {/* Header Row */}
             <div className="flex items-center justify-between">

@@ -42,6 +42,7 @@ export interface ScholarshipRepository {
   markAllNotificationsRead(studentId?: string): Promise<void>;
   clearNotifications(studentId?: string): Promise<void>;
   addNotification(notif: Omit<NotificationItem, "id" | "createdAt">): Promise<NotificationItem>;
+  notifyEligibleStudents(sch: Scholarship): Promise<number>;
   getMetrics(): Promise<ScholarshipMetrics>;
   getStudentProfile(studentId?: string): Promise<StudentProfile>;
   switchStudentPersona(studentId: string): Promise<StudentProfile>;
@@ -213,6 +214,7 @@ class HybridScholarshipRepository implements ScholarshipRepository {
         } else if (created) {
           const mapped = mapScholarshipFromDb(created);
           scholarshipStore.addScholarshipDirect(mapped);
+          scholarshipStore.notifyEligibleStudents(mapped);
           return mapped;
         }
       } catch (err) {
@@ -482,6 +484,10 @@ class HybridScholarshipRepository implements ScholarshipRepository {
 
   async addNotification(notif: Omit<NotificationItem, "id" | "createdAt">): Promise<NotificationItem> {
     return scholarshipStore.addNotification(notif);
+  }
+
+  async notifyEligibleStudents(sch: Scholarship): Promise<number> {
+    return scholarshipStore.notifyEligibleStudents(sch);
   }
 
   async getMetrics(): Promise<ScholarshipMetrics> {

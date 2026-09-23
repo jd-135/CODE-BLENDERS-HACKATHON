@@ -96,6 +96,9 @@ class ScholarshipStore {
       data.createdBy || "Dr. Evelyn Vance (Admin)"
     );
 
+    // Notify only students who strictly satisfy CGPA and Family Income criteria
+    this.notifyEligibleStudents(newScholarship);
+
     return newScholarship;
   }
 
@@ -618,6 +621,47 @@ class ScholarshipStore {
     };
     this.notifications.unshift(newNotif);
     return newNotif;
+  }
+
+  notifyEligibleStudents(sch: Scholarship): number {
+    let notifiedCount = 0;
+    const students = Array.from(this.students.values());
+
+    for (const student of students) {
+      const minGpa = sch.minGpa ?? 0;
+      let normalizedStudentGpa = student.gpa;
+      if (student.gpa > 4.0 && minGpa <= 4.0) {
+        normalizedStudentGpa = (student.gpa / 10) * 4;
+      } else if (student.gpa <= 4.0 && minGpa > 4.0) {
+        normalizedStudentGpa = (student.gpa / 4) * 10;
+      }
+
+      const meetsCgpa = minGpa === 0 || normalizedStudentGpa >= minGpa;
+      const meetsIncome = !sch.maxIncome || sch.maxIncome <= 0 || (student.annualIncome || 0) <= sch.maxIncome;
+      const depts = sch.eligibleDepartments || ["All Departments"];
+      const meetsDept =
+        depts.length === 0 ||
+        depts.includes("All Departments") ||
+        depts.some((d) => d.toLowerCase() === (student.department || "").toLowerCase());
+
+      // STRICT CRITERIA: Notify ONLY students who satisfy BOTH CGPA and Family Income
+      if (meetsCgpa && meetsIncome && meetsDept) {
+        const alreadyNotified = this.notifications.some(
+          (n) => n.studentId === student.id && n.title.includes(sch.title)
+        );
+        if (!alreadyNotified) {
+          this.addNotification({
+            studentId: student.id,
+            title: `🎯 Eligible: ${sch.title}`,
+            message: `You meet all eligibility criteria (CGPA ≥ ${minGpa.toFixed(2)}${sch.maxIncome ? `, Family Income ≤ ₹${sch.maxIncome.toLocaleString()}` : ""}) for the newly published "${sch.title}" scheme (Award: ₹${sch.awardAmount.toLocaleString()}). Submit your application today!`,
+            type: "INFO",
+            read: false,
+          });
+          notifiedCount++;
+        }
+      }
+    }
+    return notifiedCount;
   }
 
   // ===================== METRICS & TELEMETRY =====================
