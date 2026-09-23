@@ -217,7 +217,7 @@ const savePersistedDismissedNotifId = (id: string) => {
 
 export default function ScholarshipPortalDashboard() {
   // Authentication & Security Role Isolation
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeRole, setActiveRole] = useState<"STUDENT" | "ADMIN">("STUDENT");
   const [loginTab, setLoginTab] = useState<"STUDENT" | "ADMIN">("STUDENT");
   const [loginEmail, setLoginEmail] = useState("admin@scholarhub.edu");
@@ -1268,13 +1268,25 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> AES-256 Ledger Hardened
+          <div className="flex items-center gap-2.5">
+            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> AES-256 Hardened
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e2e7ff] text-[#004ac6] text-[11px] font-semibold">
-              <Sparkles className="h-3.5 w-3.5 text-[#712ae2]" /> Hackathon Jury Mode
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e2e7ff] text-[#004ac6] text-[11px] font-semibold">
+              <Sparkles className="h-3.5 w-3.5 text-[#712ae2]" /> Hackathon Mode
             </span>
+            <a
+              href="https://github.com/jd-135/CODE-BLENDERS-HACKATHON"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-semibold shadow-sm transition-all hover:scale-105"
+              title="GitHub: https://github.com/jd-135/CODE-BLENDERS-HACKATHON"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+              <span>GitHub Repo</span>
+            </a>
           </div>
         </header>
 
@@ -1343,9 +1355,9 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-bold text-[#131b2e] uppercase tracking-wider flex items-center gap-1.5">
-                          <Sparkles className="h-3.5 w-3.5 text-[#004ac6]" /> 1-Click Demo Student Personas:
+                          <Sparkles className="h-3.5 w-3.5 text-[#004ac6]" /> 1-Click Student Profile Login:
                         </span>
-                        <span className="text-[11px] text-[#737686]">Instant multi-profile testing</span>
+                        <span className="text-[11px] text-[#737686]">Select persona to enter portal</span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -1354,32 +1366,32 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                             key={p.id}
                             type="button"
                             onClick={() => handleStudentAuth(p)}
-                            className="flex flex-col p-3 rounded-2xl bg-[#f2f3ff] hover:bg-[#e2e7ff] text-left transition-all border border-[#eaedff] group hover:shadow-sm"
+                            className="flex flex-col p-3 rounded-2xl bg-[#f2f3ff] hover:bg-[#e2e7ff] text-left transition-all border border-[#eaedff] group hover:shadow-md hover:border-[#004ac6]/30 cursor-pointer"
                           >
                             <div className="flex items-center justify-between w-full">
                               <div className="flex items-center gap-2">
-                                <div className="h-7 w-7 rounded-full bg-[#dbe1ff] text-[#004ac6] font-bold text-[11px] flex items-center justify-center group-hover:scale-105 transition-transform">
+                                <div className="h-8 w-8 rounded-full bg-[#dbe1ff] text-[#004ac6] font-bold text-xs flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                                   {p.fullName
                                     .split(" ")
                                     .map((n) => n[0])
                                     .join("")
                                     .slice(0, 2)}
                                 </div>
-                                <div>
-                                  <span className="font-bold text-xs text-[#131b2e] block group-hover:text-[#004ac6]">
+                                <div className="min-w-0">
+                                  <span className="font-bold text-xs text-[#131b2e] block group-hover:text-[#004ac6] truncate">
                                     {p.fullName}
                                   </span>
                                   <span className="text-[10px] text-[#737686]">Roll: {p.rollNo}</span>
                                 </div>
                               </div>
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white font-bold text-[#004ac6] border border-[#eaedff]">
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white font-bold text-[#004ac6] border border-[#eaedff] shrink-0">
                                 {p.gpa} CGPA
                               </span>
                             </div>
                             <div className="mt-2 pt-2 border-t border-[#eaedff] flex items-center justify-between text-[10px] text-[#737686]">
-                              <span>{p.department.split("&")[0]}</span>
-                              <span className="font-medium text-emerald-800">
-                                {p.category}
+                              <span className="truncate">{p.department.split("&")[0]}</span>
+                              <span className="font-bold text-[#004ac6] group-hover:underline shrink-0">
+                                1-Click Login →
                               </span>
                             </div>
                           </button>
@@ -1512,6 +1524,25 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
             </div>
           </motion.div>
         </main>
+
+        {/* Login Page Footer with GitHub Link */}
+        <footer className="py-6 text-center text-xs text-[#737686] border-t border-[#eaedff] bg-white/70 backdrop-blur-sm z-10">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-4">
+            <span>© 2026 National Scholarship Trust • Bannari Amman Institute of Technology</span>
+            <span className="hidden sm:inline text-slate-300">&bull;</span>
+            <a
+              href="https://github.com/jd-135/CODE-BLENDERS-HACKATHON"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#004ac6] hover:underline font-semibold flex items-center gap-1.5 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+              <span>GitHub: jd-135/CODE-BLENDERS-HACKATHON ↗</span>
+            </a>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -1768,6 +1799,24 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
           )}
         </div>
 
+        {/* GitHub Repository Quick Link in Sidebar */}
+        <div className="px-4 py-2 mx-3 mb-1 rounded-xl bg-slate-50 border border-slate-200/80">
+          <a
+            href="https://github.com/jd-135/CODE-BLENDERS-HACKATHON"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between text-[11px] text-[#434655] hover:text-[#004ac6] transition-colors font-medium group"
+          >
+            <div className="flex items-center gap-2">
+              <svg className="w-3.5 h-3.5 fill-current text-slate-800" viewBox="0 0 24 24">
+                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+              <span>GitHub Repo</span>
+            </div>
+            <span className="text-[10px] text-slate-400 group-hover:text-[#004ac6]">↗</span>
+          </a>
+        </div>
+
         {/* User Profile Card & Sign Out Button */}
         <div className="p-3 m-3 bg-[#f2f3ff] rounded-xl flex flex-col gap-2 border border-[#eaedff]">
           <div className="flex items-center justify-between">
@@ -1854,6 +1903,20 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               </span>
               <span className="sm:hidden font-bold">?</span>
             </Button>
+
+            {/* GitHub Repository Link */}
+            <a
+              href="https://github.com/jd-135/CODE-BLENDERS-HACKATHON"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-8 px-2.5 rounded-lg border border-slate-200 bg-slate-900 hover:bg-black text-white text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              title="View Source on GitHub (jd-135/CODE-BLENDERS-HACKATHON)"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+              <span className="hidden sm:inline">GitHub</span>
+            </a>
 
             {/* Sync Button */}
             <Button
