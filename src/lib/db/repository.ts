@@ -39,6 +39,8 @@ export interface ScholarshipRepository {
   syncDigiLocker(studentId: string): Promise<{ success: boolean; syncedCount: number; timestamp: string }>;
   getNotifications(studentId?: string): Promise<NotificationItem[]>;
   markNotificationRead(id: string): Promise<boolean>;
+  markAllNotificationsRead(studentId?: string): Promise<void>;
+  clearNotifications(studentId?: string): Promise<void>;
   addNotification(notif: Omit<NotificationItem, "id" | "createdAt">): Promise<NotificationItem>;
   getMetrics(): Promise<ScholarshipMetrics>;
   getStudentProfile(studentId?: string): Promise<StudentProfile>;
@@ -444,6 +446,38 @@ class HybridScholarshipRepository implements ScholarshipRepository {
 
   async markNotificationRead(id: string): Promise<boolean> {
     return scholarshipStore.markNotificationRead(id);
+  }
+
+  async markAllNotificationsRead(studentId?: string): Promise<void> {
+    if (this.useSupabase && supabase) {
+      try {
+        let q = supabase.from("notifications").update({ read: true });
+        if (studentId) {
+          q = q.eq("student_id", studentId);
+        }
+        await q;
+      } catch (err) {
+        console.warn("[Repository] Supabase markAllNotificationsRead failed:", err);
+      }
+    }
+    scholarshipStore.markAllNotificationsRead(studentId);
+  }
+
+  async clearNotifications(studentId?: string): Promise<void> {
+    if (this.useSupabase && supabase) {
+      try {
+        let q = supabase.from("notifications").delete();
+        if (studentId) {
+          q = q.eq("student_id", studentId);
+        } else {
+          q = q.neq("id", "none");
+        }
+        await q;
+      } catch (err) {
+        console.warn("[Repository] Supabase clearNotifications failed:", err);
+      }
+    }
+    scholarshipStore.clearNotifications(studentId);
   }
 
   async addNotification(notif: Omit<NotificationItem, "id" | "createdAt">): Promise<NotificationItem> {

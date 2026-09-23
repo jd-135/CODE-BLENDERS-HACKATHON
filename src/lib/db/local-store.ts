@@ -593,6 +593,23 @@ class ScholarshipStore {
     return true;
   }
 
+  markAllNotificationsRead(studentId?: string): void {
+    this.notifications = this.notifications.map((n) => {
+      if (!studentId || n.studentId === studentId) {
+        return { ...n, read: true };
+      }
+      return n;
+    });
+  }
+
+  clearNotifications(studentId?: string): void {
+    if (studentId) {
+      this.notifications = this.notifications.filter((n) => n.studentId !== studentId);
+    } else {
+      this.notifications = [];
+    }
+  }
+
   addNotification(notif: Omit<NotificationItem, "id" | "createdAt">): NotificationItem {
     const newNotif: NotificationItem = {
       ...notif,

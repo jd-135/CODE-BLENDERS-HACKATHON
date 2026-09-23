@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import confetti from "canvas-confetti";
 import {
@@ -139,6 +139,7 @@ import {
   Upload,
   MessageSquare,
   Edit3,
+  BellOff,
 } from "lucide-react";
 
 // Safe Deterministic Currency Formatter (Eliminates SSR/Locale Hydration Mismatch)
@@ -175,6 +176,45 @@ function formatTime(dateStr?: string): string {
   }
 }
 
+// LocalStorage helpers for cross-session notification persistence
+const getPersistedReadNotifIds = (): Set<string> => {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem("ps78_read_notifications");
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+};
+
+const savePersistedReadNotifIds = (ids: string[]) => {
+  if (typeof window === "undefined" || !ids || ids.length === 0) return;
+  try {
+    const existing = getPersistedReadNotifIds();
+    ids.forEach((id) => existing.add(id));
+    localStorage.setItem("ps78_read_notifications", JSON.stringify(Array.from(existing)));
+  } catch {}
+};
+
+const getPersistedDismissedNotifIds = (): Set<string> => {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem("ps78_dismissed_notifications");
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+};
+
+const savePersistedDismissedNotifId = (id: string) => {
+  if (typeof window === "undefined" || !id) return;
+  try {
+    const existing = getPersistedDismissedNotifIds();
+    existing.add(id);
+    localStorage.setItem("ps78_dismissed_notifications", JSON.stringify(Array.from(existing)));
+  } catch {}
+};
+
 export default function ScholarshipPortalDashboard() {
   // Authentication & Security Role Isolation
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -192,7 +232,7 @@ export default function ScholarshipPortalDashboard() {
   const [scholarships, setScholarships] = useState<Scholarship[]>(initialScholarships);
   const [applications, setApplications] = useState<Application[]>(initialApplications);
   const [vaultDocuments, setVaultDocuments] = useState<VaultDocument[]>(initialVaultDocuments);
-  const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [metrics, setMetrics] = useState<ScholarshipMetrics | null>(null);
   const [student, setStudent] = useState<StudentProfile>(initialStudent);
@@ -345,7 +385,14 @@ export default function ScholarshipPortalDashboard() {
   });
   const [bonafideForensicReport, setBonafideForensicReport] = useState<DocumentVerificationReport | null>(null);
   const [activeCertModal, setActiveCertModal] = useState<"NONE" | "SIGNATURE_INCOME" | "INSPECT_CGPA" | "CHECK_MANDATE">("NONE");
-  const [sessionDismissedNotifs, setSessionDismissedNotifs] = useState<Set<string>>(new Set());
+  const [sessionDismissedNotifs, setSessionDismissedNotifs] = useState<Set<string>>(() => {
+    return getPersistedDismissedNotifIds();
+  });
+
+  const dismissNotifId = (id: string) => {
+    savePersistedDismissedNotifId(id);
+    setSessionDismissedNotifs((prev) => new Set(prev).add(id));
+  };
 
   // Enhanced Indian Document Upload Form & Forensics Engine
   const [uploadMode, setUploadMode] = useState<"FILE" | "DIGILOCKER" | "PRESET">("FILE");
@@ -420,7 +467,13 @@ export default function ScholarshipPortalDashboard() {
       if (lList) setLogs(lList);
       if (mData) setMetrics(mData);
       if (docList) setVaultDocuments(docList);
-      if (notifList) setNotifications(notifList);
+      if (notifList) {
+        const readIds = getPersistedReadNotifIds();
+        const syncedNotifs = notifList.map((n) =>
+          readIds.has(n.id) ? { ...n, read: true } : n
+        );
+        setNotifications(syncedNotifs);
+      }
       if (blocks && blocks.length > 0) setLedgerBlocks(blocks);
       if (integrity) setChainIntegrity(integrity);
       if (sProfile) {
@@ -438,6 +491,44 @@ export default function ScholarshipPortalDashboard() {
   useEffect(() => {
     refreshData(activePersonaId);
   }, [activePersonaId]);
+
+  // Auto-mark notifications as read when visiting the Notifications tab
+  useEffect(() => {
+    if (activeTab === "notifications" && notifications.length > 0) {
+      const readIds = getPersistedReadNotifIds();
+      const unread = notifications.filter((n) => !n.read && !readIds.has(n.id));
+      if (unread.length > 0) {
+        const unreadIds = unread.map((n) => n.id);
+        savePersistedReadNotifIds(unreadIds);
+        setNotifications((prev) =>
+          prev.map((n) => (unreadIds.includes(n.id) ? { ...n, read: true } : n))
+        );
+        db.markAllNotificationsRead(activePersonaId).catch(() => {});
+      }
+    }
+  }, [activeTab, notifications, activePersonaId]);
+
+  // Real-time unread notification count across reloads & sessions
+  const unreadNotifsCount = useMemo(() => {
+    const readIds = getPersistedReadNotifIds();
+    return notifications.filter(
+      (n) => !n.read && !readIds.has(n.id) && !sessionDismissedNotifs.has(n.id)
+    ).length;
+  }, [notifications, sessionDismissedNotifs]);
+
+  const visibleNotifications = useMemo(() => {
+    return notifications.filter((n) => !sessionDismissedNotifs.has(n.id));
+  }, [notifications, sessionDismissedNotifs]);
+
+  const showRejectionAlert = !sessionDismissedNotifs.has("alert-statutory-rejection");
+  const showAiMatchAlert = !sessionDismissedNotifs.has("alert-ai-match");
+  const showBonafideAlert = bonafideStatus !== "VERIFIED" && !sessionDismissedNotifs.has("notif-bonafide-renewal");
+
+  const visibleNotifsCount = visibleNotifications.length + (showRejectionAlert ? 1 : 0) + (showAiMatchAlert ? 1 : 0) + (showBonafideAlert ? 1 : 0);
+  const alertsCount = (showRejectionAlert ? 1 : 0) + visibleNotifications.filter((n) => n.type === "WARNING").length;
+  const verificationCount = (showBonafideAlert ? 1 : 0) + (showAiMatchAlert ? 1 : 0) + visibleNotifications.filter((n) => n.type === "INFO").length;
+  const deadlinesCount = 0;
+  const disbursalsCount = visibleNotifications.filter((n) => n.type === "SUCCESS").length;
 
   // Strict Role Navigation & Security Guard
   useEffect(() => {
@@ -1020,11 +1111,49 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
   };
 
   const handleMarkNotificationRead = (id: string) => {
-    setSessionDismissedNotifs((prev) => new Set(prev).add(id));
+    savePersistedReadNotifIds([id]);
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
     startTransition(async () => {
       await db.markNotificationRead(id);
+    });
+  };
+
+  const handleMarkAllNotificationsRead = () => {
+    const ids = notifications.map((n) => n.id);
+    savePersistedReadNotifIds(ids);
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    startTransition(async () => {
+      await db.markAllNotificationsRead(activePersonaId);
+    });
+    setAdminActionNotice("All notifications marked as read.");
+    setTimeout(() => setAdminActionNotice(null), 3000);
+  };
+
+  const handleClearAllNotifications = () => {
+    const toDismiss = [
+      "alert-statutory-rejection",
+      "alert-ai-match",
+      "notif-bonafide-renewal",
+    ];
+    notifications.forEach((n) => toDismiss.push(n.id));
+    toDismiss.forEach((id) => savePersistedDismissedNotifId(id));
+    savePersistedReadNotifIds(notifications.map((n) => n.id));
+
+    setSessionDismissedNotifs((prev) => {
+      const updated = new Set(prev);
+      toDismiss.forEach((id) => updated.add(id));
+      return updated;
+    });
+
+    setNotifications([]);
+    startTransition(async () => {
+      await db.clearNotifications(activePersonaId);
       await refreshData();
     });
+    setAdminActionNotice("All notifications cleared. Notification center is fresh.");
+    setTimeout(() => setAdminActionNotice(null), 3000);
   };
 
   const handleOpenDedicatedUpload = (
@@ -1506,9 +1635,9 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                     <Bell className="h-4 w-4" />
                     <span>Notifications</span>
                   </div>
-                  {notifications.filter((n) => !n.read).length > 0 && (
+                  {unreadNotifsCount > 0 && (
                     <span className="px-2 py-0.5 rounded-full bg-[#712ae2] text-white text-[10px] font-bold">
-                      {notifications.filter((n) => !n.read).length}
+                      {unreadNotifsCount}
                     </span>
                   )}
                 </button>
@@ -1742,7 +1871,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                 className="relative p-2 rounded-lg text-[#434655] hover:bg-[#f2f3ff] hover:text-[#131b2e]"
               >
                 <Bell className="h-5 w-5" />
-                {notifications.filter((n) => !n.read).length > 0 && (
+                {unreadNotifsCount > 0 && (
                   <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#712ae2]" />
                 )}
               </button>
@@ -5602,15 +5731,20 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   <div className="flex items-center gap-2 self-start lg:self-center flex-wrap">
                     <button
                       type="button"
-                      onClick={() => {
-                        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-                        setAdminActionNotice("All notifications marked as read.");
-                        setTimeout(() => setAdminActionNotice(null), 3000);
-                      }}
+                      onClick={handleMarkAllNotificationsRead}
                       className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#f2f3ff] text-[#131b2e] hover:bg-[#e2e7ff] transition-colors text-xs font-semibold shadow-sm"
                     >
                       <CheckCircle2 className="h-4 w-4 text-[#004ac6]" />
                       <span>Mark all as read</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClearAllNotifications}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#ffdad6]/60 text-[#ba1a1a] hover:bg-[#ffdad6] transition-colors text-xs font-semibold shadow-sm"
+                      title="Clear and reset all notifications"
+                    >
+                      <Trash2 className="h-4 w-4 text-[#ba1a1a]" />
+                      <span>Clear all</span>
                     </button>
                     <button
                       type="button"
@@ -5629,12 +5763,12 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                 {/* Filter Strip */}
                 <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-1 no-scrollbar">
                   {[
-                    { id: "all", label: "All", count: notifications.length + 3 },
-                    { id: "unread", label: "Unread", count: notifications.filter((n) => !n.read).length + 2, isUnread: true },
-                    { id: "alerts", label: "Alerts & Disqualifications", count: 1, isAlert: true },
-                    { id: "verification", label: "Verification & Approvals", count: 5 },
-                    { id: "deadlines", label: "Deadlines", count: 3 },
-                    { id: "disbursals", label: "Disbursals", count: 2 },
+                    { id: "all", label: "All", count: visibleNotifsCount },
+                    { id: "unread", label: "Unread", count: unreadNotifsCount, isUnread: true },
+                    { id: "alerts", label: "Alerts & Disqualifications", count: alertsCount, isAlert: true },
+                    { id: "verification", label: "Verification & Approvals", count: verificationCount },
+                    { id: "deadlines", label: "Deadlines", count: deadlinesCount },
+                    { id: "disbursals", label: "Disbursals", count: disbursalsCount },
                   ].map((filter) => {
                     const isActive = notifFilter === filter.id;
 
@@ -5675,7 +5809,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 <div className="lg:col-span-8 flex flex-col gap-4">
                   {/* URGENT STATUTORY REJECTION ALERT CARD (Stitch Screen) */}
-                  {(notifFilter === "all" || notifFilter === "unread" || notifFilter === "alerts") && (
+                  {(notifFilter === "all" || notifFilter === "unread" || notifFilter === "alerts") && showRejectionAlert && (
                     <div className="relative bg-[#ffffff] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start gap-4 border-l-4 border-l-[#ba1a1a] border border-[#eaedff]">
                       <div className="shrink-0 w-12 h-12 rounded-xl bg-[#ffdad6] flex items-center justify-center text-[#ba1a1a] animate-pulse">
                         <AlertTriangle className="h-6 w-6" />
@@ -5688,7 +5822,17 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                             </span>
                             <span className="w-2 h-2 rounded-full bg-[#ba1a1a] inline-block animate-pulse" title="Immediate Action Required" />
                           </div>
-                          <span className="text-xs font-semibold text-[#ba1a1a]">Just now (Urgent)</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-[#ba1a1a]">Just now (Urgent)</span>
+                            <button
+                              type="button"
+                              onClick={() => dismissNotifId("alert-statutory-rejection")}
+                              className="text-[#737686] hover:text-[#ba1a1a] p-1 rounded hover:bg-[#ffdad6]/40"
+                              title="Dismiss this alert"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         </div>
 
                         <h2 className="font-bold text-base text-[#131b2e] mt-1.5 font-heading">
@@ -5757,7 +5901,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   )}
 
                   {/* ITEM 1: HIGH PRIORITY AI MATCH */}
-                  {(notifFilter === "all" || notifFilter === "unread" || notifFilter === "verification") && (
+                  {(notifFilter === "all" || notifFilter === "unread" || notifFilter === "verification") && showAiMatchAlert && (
                     <div className="relative bg-[#ffffff] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start gap-4 border border-[#eaedff]">
                       <div className="shrink-0 w-12 h-12 rounded-xl bg-[#712ae2]/10 flex items-center justify-center text-[#712ae2]">
                         <Sparkles className="h-6 w-6" />
@@ -5770,7 +5914,17 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                             </span>
                             <span className="w-2 h-2 rounded-full bg-[#712ae2] inline-block" title="Unread" />
                           </div>
-                          <span className="text-xs text-[#737686]">15 mins ago</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-[#737686]">15 mins ago</span>
+                            <button
+                              type="button"
+                              onClick={() => dismissNotifId("alert-ai-match")}
+                              className="text-[#737686] hover:text-[#ba1a1a] p-1 rounded hover:bg-[#f2f3ff]"
+                              title="Dismiss this recommendation"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         </div>
 
                         <h2 className="font-bold text-base text-[#131b2e] mt-1.5 font-heading">
@@ -5811,7 +5965,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                   )}
 
                   {/* ITEM 2: DOCUMENT RENEWAL REQUIRED (Only if not verified or not dismissed) */}
-                  {(notifFilter === "all" || notifFilter === "unread" || notifFilter === "verification") && bonafideStatus !== "VERIFIED" && !sessionDismissedNotifs.has("notif-bonafide-renewal") && (
+                  {(notifFilter === "all" || notifFilter === "unread" || notifFilter === "verification") && showBonafideAlert && (
                     <div className="relative bg-[#ffffff] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start gap-4 border border-[#eaedff]">
                       <div className="shrink-0 w-12 h-12 rounded-xl bg-[#ffdad6]/60 flex items-center justify-center text-[#ba1a1a]">
                         <FileText className="h-6 w-6" />
@@ -5828,7 +5982,7 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
                             <span className="text-xs text-[#737686]">2 hours ago</span>
                             <button
                               type="button"
-                              onClick={() => setSessionDismissedNotifs((prev) => new Set(prev).add("notif-bonafide-renewal"))}
+                              onClick={() => dismissNotifId("notif-bonafide-renewal")}
                               className="text-[#737686] hover:text-[#ba1a1a] p-1 rounded hover:bg-[#ffdad6]/40"
                               title="Dismiss for this session"
                             >
@@ -5875,55 +6029,88 @@ Authorized by: Jay Dinakar R (Academic Trust Dean)
 
                   {/* REGULAR NOTIFICATIONS LIST */}
                   <div className="space-y-3 pt-2">
-                    {notifications
-                      .filter((notif) => !sessionDismissedNotifs.has(notif.id))
-                      .map((notif) => (
-                      <div
-                        key={notif.id}
-                        onClick={() => handleMarkNotificationRead(notif.id)}
-                        className={`p-4 rounded-xl bg-white border border-[#eaedff] shadow-sm flex items-start gap-3 transition-all cursor-pointer hover:border-[#2563eb]/40 ${
-                          !notif.read ? "border-l-4 border-l-[#2563eb] bg-[#faf8ff]" : ""
-                        }`}
-                      >
-                        <div
-                          className={`h-2.5 w-2.5 rounded-full mt-1.5 shrink-0 ${
-                            notif.type === "SUCCESS"
-                              ? "bg-emerald-500"
-                              : notif.type === "WARNING"
-                              ? "bg-[#ba1a1a]"
-                              : "bg-[#712ae2]"
-                          }`}
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-semibold text-xs text-[#131b2e]">{notif.title}</h4>
-                            <div className="flex items-center gap-2">
-                              {!notif.read && (
-                                <span className="px-2 py-0.5 rounded-full bg-[#e2e7ff] text-[#004ac6] text-[9px] font-bold">
-                                  NEW
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSessionDismissedNotifs((prev) => new Set(prev).add(notif.id));
-                                }}
-                                className="text-[#737686] hover:text-[#ba1a1a] p-0.5 rounded"
-                                title="Dismiss notification"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
+                    {visibleNotifications
+                      .filter((notif) => {
+                        const isRead = notif.read || getPersistedReadNotifIds().has(notif.id);
+                        if (notifFilter === "unread") return !isRead;
+                        if (notifFilter === "alerts") return notif.type === "WARNING";
+                        if (notifFilter === "verification") return notif.type === "INFO";
+                        if (notifFilter === "disbursals") return notif.type === "SUCCESS";
+                        return true;
+                      })
+                      .map((notif) => {
+                        const isRead = notif.read || getPersistedReadNotifIds().has(notif.id);
+                        return (
+                          <div
+                            key={notif.id}
+                            onClick={() => handleMarkNotificationRead(notif.id)}
+                            className={`p-4 rounded-xl bg-white border border-[#eaedff] shadow-sm flex items-start gap-3 transition-all cursor-pointer hover:border-[#2563eb]/40 ${
+                              !isRead ? "border-l-4 border-l-[#2563eb] bg-[#faf8ff]" : ""
+                            }`}
+                          >
+                            <div
+                              className={`h-2.5 w-2.5 rounded-full mt-1.5 shrink-0 ${
+                                notif.type === "SUCCESS"
+                                  ? "bg-emerald-500"
+                                  : notif.type === "WARNING"
+                                  ? "bg-[#ba1a1a]"
+                                  : "bg-[#712ae2]"
+                              }`}
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-semibold text-xs text-[#131b2e]">{notif.title}</h4>
+                                <div className="flex items-center gap-2">
+                                  {!isRead && (
+                                    <span className="px-2 py-0.5 rounded-full bg-[#e2e7ff] text-[#004ac6] text-[9px] font-bold">
+                                      NEW
+                                    </span>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      dismissNotifId(notif.id);
+                                    }}
+                                    className="text-[#737686] hover:text-[#ba1a1a] p-0.5 rounded"
+                                    title="Dismiss notification"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="text-xs text-[#737686] mt-0.5">{notif.message}</p>
+                              <span className="text-[10px] text-[#737686] mt-1 block font-mono">
+                                {formatDate(notif.createdAt)}
+                              </span>
                             </div>
                           </div>
-                          <p className="text-xs text-[#737686] mt-0.5">{notif.message}</p>
-                          <span className="text-[10px] text-[#737686] mt-1 block font-mono">
-                            {formatDate(notif.createdAt)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                        );
+                      })}
                   </div>
+
+                  {/* Clean Empty State when all notifications caught up / cleared */}
+                  {visibleNotifsCount === 0 && (
+                    <div className="bg-white rounded-2xl p-12 text-center border border-[#eaedff] shadow-sm flex flex-col items-center justify-center">
+                      <div className="w-16 h-16 rounded-2xl bg-[#f2f3ff] flex items-center justify-center text-[#2563eb] mb-4">
+                        <BellOff className="h-8 w-8 text-[#004ac6]" />
+                      </div>
+                      <h3 className="text-lg font-bold text-[#131b2e] font-heading">
+                        All Caught Up!
+                      </h3>
+                      <p className="text-xs text-[#737686] max-w-md mt-1.5 leading-relaxed">
+                        No pending notifications or alerts for your profile. Your notifications are clean and fresh. New notifications will appear here when your applications are reviewed or grant funds are disbursed.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => refreshData()}
+                        className="mt-5 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#2563eb] text-white text-xs font-semibold hover:bg-[#004ac6] transition-all shadow-sm"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        <span>Check for Updates</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right Column / Quick Insights & Channels */}
